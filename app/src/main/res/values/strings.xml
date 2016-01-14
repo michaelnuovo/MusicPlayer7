@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_activity_artists">ActivityArtists</string>
+    <string name="title_activity_activity_albums">ActivityAlbums</string>
+    <string name="title_activity_activity_play_panel">ActivityPlayPanel</string>
+    <string name="title_activity_single_artist">SingleArtist</string>
+    <string name="title_activity_single_album">SingleAlbum</string>
+</resources>
