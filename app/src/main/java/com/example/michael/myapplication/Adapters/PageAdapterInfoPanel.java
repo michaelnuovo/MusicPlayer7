@@ -27,6 +27,7 @@ import com.example.michael.myapplication.Utilities.FastBlur;
 import com.example.michael.myapplication.Utilities.ScaleCenterCrop;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -44,13 +45,9 @@ public class PageAdapterInfoPanel extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup collection, final int position) {
 
-        //SongObject songObject = songObjectList.get(StaticMusicPlayer.getCurrentIndex());
 
         LayoutInflater inflater = LayoutInflater.from(ctx);
-
-        //The layout the page will adapt
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.pager_layout_infopanel, collection, false); //a view group is a layout, a view is a child of a view group
-
         collection.addView(layout);
 
         TextView footer_song_title_pager = (TextView) layout.findViewById(R.id.footer_song_title_pager);
@@ -82,17 +79,20 @@ public class PageAdapterInfoPanel extends PagerAdapter {
 
     public void setViewPagerBackground(ViewGroup layout, int position){
 
-        Point size = new Point();
-        Display display = ((WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        display.getSize(size);
-        int width = size.x;
-        //int height = size.y;
+        if(new File(songObjectList.get(position).albumArtURI).exists()){
 
-        Bitmap bm = ScaleCenterCrop.scaleCenterCrop(BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI), dpToPx(150), width); //h/w
-        //Bitmap bmb = FastBlur.fastblur(bm, 1, 5);
-        Bitmap bmd = BitmapDarken.darkenBitMap(bm);
-        BitmapDrawable dw = new BitmapDrawable(bmd);
-        layout.setBackgroundDrawable(dw);
+            Point size = new Point();
+            Display display = ((WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            display.getSize(size);
+            int width = size.x;
+            //int height = size.y;
+
+            Bitmap bm = ScaleCenterCrop.scaleCenterCrop(BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI), dpToPx(150), width); //h/w
+            //Bitmap bmb = FastBlur.fastblur(bm, 1, 5);
+            Bitmap bmd = BitmapDarken.darkenBitMap(bm);
+            BitmapDrawable dw = new BitmapDrawable(bmd);
+            layout.setBackgroundDrawable(dw);
+        }
     }
 
     public int dpToPx(int dp) {

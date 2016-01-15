@@ -1,5 +1,6 @@
 package com.example.michael.myapplication.Activities;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,9 +9,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.michael.myapplication.Networking.LastFmAlbumLookup;
 import com.example.michael.myapplication.Objects.AlbumObject;
 import com.example.michael.myapplication.Objects.ArtistObject;
 import com.example.michael.myapplication.Fragments.FragmentAlbumList;
@@ -20,12 +23,13 @@ import com.example.michael.myapplication.Adapters.PageAdapterMainActivity;
 import com.example.michael.myapplication.R;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.Utilities.AlbumArt;
+import com.example.michael.myapplication.Utilities.MediaStoreInterface;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     ArrayList<SongObject> songObjectList = new ArrayList<>();
     ArrayList<AlbumObject> albumObjectList = new ArrayList<>();
@@ -34,13 +38,44 @@ public class Main extends AppCompatActivity {
     PageAdapterMainActivity pageAdapter;
     ViewPager viewPager;
 
+    public void doNetworkingStuff(){
+        //MediaStoreInterface mint = new MediaStoreInterface(ctx);
+        //mint.clearFolder("myalbumart");
+
+        AlbumArt aa = new AlbumArt(this,albumObjectList);
+        aa.resetPaths(); // set to album path to null if there are no native images
+        //aa.dumpAlbumColumns();
+
+        LastFmAlbumLookup lf = new LastFmAlbumLookup(this,albumObjectList);
+        lf.makeRequest();
+
+        //printAlbums();
+    }
+
+    public void printAlbums(){
+        for(int i=0;i<albumObjectList.size();i++){
+            Log.v("TAG","albumObjectList.get(i).albumTitle is "+albumObjectList.get(i).albumTitle);
+            Log.v("TAG","albumObjectList.get(i).albumArtURI uri is "+albumObjectList.get(i).albumArtURI);
+        }
+    }
+
+    static Context ctx;
+    public static Context getAppContext() {
+        return ctx;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ctx = getApplicationContext();
+
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
+
+
 
         List<Fragment> fragments = getFragments(songObjectList, artistObjectList, albumObjectList);
         pageAdapter = new PageAdapterMainActivity(getSupportFragmentManager(), fragments);
@@ -70,6 +105,11 @@ public class Main extends AppCompatActivity {
         StaticMusicPlayer.setPlayList(songObjectList);
         //AlbumArt.cropAndSave(songObjectList);
 
+        for(int i=0;i<albumObjectList.size();i++){
+            Log.v("TAG", "album title: " + albumObjectList.get(i).albumTitle);
+        }
+
+        doNetworkingStuff();
     }
 
     private List<Fragment> getFragments(ArrayList<SongObject> songObjectList,

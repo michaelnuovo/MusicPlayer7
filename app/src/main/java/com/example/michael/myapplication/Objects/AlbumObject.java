@@ -12,11 +12,12 @@ public class AlbumObject implements Parcelable {
     public int albumTrackCount = 0;
     public int albumId;
     public String albumArtURI;
+    public String albumArtURI_Center_Cropped_To_Sreen;
     public ArrayList<SongObject> songObjectList = new ArrayList<>();
 
-    int lastFmRequestErrorNumber = 0;
-    int spotifyRequestErrorNumber = 0;
-    int amazonRequestErrorNumber = 0;
+    public int lastFmRequestErrorNumber = 0;
+    public int spotifyRequestErrorNumber = 0;
+    public int amazonRequestErrorNumber = 0;
 
     public AlbumObject(String albumTitle, String albumArtist, String albumArtURI, SongObject songObject){
 
@@ -46,6 +47,7 @@ public class AlbumObject implements Parcelable {
         albumTitle = in.readString();
         albumArtist = in.readString();
         albumArtURI = in.readString();
+        albumArtURI_Center_Cropped_To_Sreen = in.readString();
         albumTrackCount = in.readInt();
         amazonRequestErrorNumber = in.readInt();
         spotifyRequestErrorNumber = in.readInt();
@@ -70,6 +72,7 @@ public class AlbumObject implements Parcelable {
 
     public void readFromParcel(Parcel in) {
         albumArtURI = in.readString();
+        albumArtURI_Center_Cropped_To_Sreen = in.readString();
         albumTitle = in.readString();
         albumArtist = in.readString();
 
@@ -88,6 +91,7 @@ public class AlbumObject implements Parcelable {
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(albumArtURI);
+        dest.writeString(albumArtURI_Center_Cropped_To_Sreen);
         dest.writeString(albumTitle);
         dest.writeString(albumArtist);
 

@@ -3,6 +3,7 @@ package com.example.michael.myapplication.Utilities;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.RectF;
+import android.util.Log;
 
 public class ScaleCenterCrop {
 
@@ -34,6 +35,8 @@ public class ScaleCenterCrop {
 
         // Finally, we create a new bitmap of the specified size and draw our new,
         // scaled bitmap onto it.
+        Log.v("TAG", "newWidth is "+String.valueOf(newWidth));
+        Log.v("TAG", "newHeight is "+String.valueOf(newHeight));
         Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
         Canvas canvas = new Canvas(dest);
         canvas.drawBitmap(source, null, targetRect, null);
