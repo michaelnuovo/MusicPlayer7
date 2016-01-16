@@ -35,8 +35,7 @@ public class ScaleCenterCrop {
 
         // Finally, we create a new bitmap of the specified size and draw our new,
         // scaled bitmap onto it.
-        Log.v("TAG", "newWidth is "+String.valueOf(newWidth));
-        Log.v("TAG", "newHeight is "+String.valueOf(newHeight));
+
         Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
         Canvas canvas = new Canvas(dest);
         canvas.drawBitmap(source, null, targetRect, null);
