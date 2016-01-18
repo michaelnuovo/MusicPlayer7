@@ -34,4 +34,5 @@ dependencies {
     //compile 'org.simpleframework:simple-xml:2.7.1'
     compile 'commons-codec:commons-codec:1.9'
     //compile 'commons-io:commons-io:2.4'
+    compile 'com.eftimoff:android-viewpager-transformers:1.0.1@aar'
 }

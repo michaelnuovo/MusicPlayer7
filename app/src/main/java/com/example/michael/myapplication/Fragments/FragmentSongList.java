@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,8 +50,12 @@ public class FragmentSongList extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                Intent intent = new Intent(getActivity(), PlayPanel.class);
+                startActivity(intent);
+                ArrayList<SongObject> shuffedPlayList = StaticMusicPlayer.returnShuffledList(songObjectList);
+                StaticMusicPlayer.setPlayList(shuffedPlayList);
+                StaticMusicPlayer.tryToPlaySong(shuffedPlayList.get(0));
             }
         });
 
@@ -77,7 +82,28 @@ public class FragmentSongList extends Fragment {
         //Set list item click listener
         setListItemClickListener(listView);
 
+
+        setPagerListener(viewPager);
+
         return rootView;
+    }
+
+    private void setPagerListener(ViewPager viewPager){
+
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrollStateChanged(int state) {
+            }
+
+            public void onPageScrolled(final int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            public void onPageSelected(int position) {
+                //backgroundViewPager.setCurrentItem(position);
+                Log.v("TAG", "!@#F#$Wf");
+                StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(position));
+            }
+        });
     }
 
     public void setListItemClickListener(ListView listView){
@@ -92,6 +118,4 @@ public class FragmentSongList extends Fragment {
             }
         });
     }
-
-
 }

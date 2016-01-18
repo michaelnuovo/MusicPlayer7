@@ -19,12 +19,8 @@ import com.example.michael.myapplication.Activities.MainActivity;
 import com.example.michael.myapplication.Objects.AlbumObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
 
 /**
  * This class will save a bitmap to disk as a jpg.
@@ -33,67 +29,55 @@ import java.util.Random;
 public class SaveBitMapToDisk {
 
     String imagePath1;
-    String imagePath2;
-    String imagePath3;
-
-    Bitmap croppedToScreen;
-    Bitmap scaledToScreenWidth;
 
     public String getImagePath1(){
         return imagePath1;
     }
 
-    public void SaveImage(final Bitmap source, String folderName, AlbumObject albumObject) {
-
-        WindowManager wm = (WindowManager) MainActivity.getAppContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screenWidth = size.x;
-        int screenHeight = size.y;
-
+    public void SaveImage(Bitmap source, String folderName, AlbumObject albumObject) {
 
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/" + folderName);
         myDir.mkdirs();
-
-        String fileName1 = albumObject.albumTitle + "_source_"              + albumObject.albumId + ".jpg";
-        String fileName2 = albumObject.albumTitle + "_croppedToScreen_"     + albumObject.albumId + ".jpg";
-        String fileName3 = albumObject.albumTitle + "_scaledToScreenWidth_" + albumObject.albumId + ".jpg";
-
-        //saveToInternalSorage(source, fileName1);
-        //saveToInternalSorage(croppedToScreen, fileName2);
-        //saveToInternalSorage(scaledToScreenWidth, fileName3);
-
+        String fileName1 = albumObject.albumTitle + "_source_" + albumObject.albumId + ".jpg";
         albumObject.albumArtURI = fileName1;
-        albumObject.albumArtURI_Center_Cropped_To_Sreen = fileName2;
-        albumObject.getAlbumArtURI_Scaled_To_Screen_Width = fileName3;
-
         imagePath1 = myDir + "/" + fileName1;
-        imagePath2 = myDir + "/" + fileName2;
-        imagePath3 = myDir + "/" + fileName3;
-
         File file1 = new File(myDir, fileName1);
-        File file2 = new File(myDir, fileName2);
-        File file3 = new File(myDir, fileName3);
-
         if (file1.exists()) file1.delete();
-        if (file2.exists()) file2.delete();
-        if (file3.exists()) file3.delete();
+        saveToExternalStorage(scale(source), file1);
+        source.recycle();
+        source=null;
+    }
 
-        //We need to save memory here when we use bitmaps
-        saveToExternalStorage(source, file1);
+    public Bitmap scale(Bitmap source){
+        //All bit maps are scaled before they are saved to disk
+        int maxWidth = 500; //Must be at least two pixels long (a shorter length will collapse width to zero)
+        double heightFactor = (double) maxWidth / (double) source.getWidth();
+        int sourceHeight = source.getHeight();
+        Bitmap finalBm = Bitmap.createScaledBitmap(source,maxWidth,(int)(sourceHeight*heightFactor),false); //width/height
+        //printDimensions(source, heightFactor, maxWidth, sourceHeight);
+        source.recycle();
+        source=null;
+        return finalBm;
+    }
 
-        croppedToScreen = ScaleCenterCrop.scaleCenterCrop(source, screenHeight, screenWidth);
-        saveToExternalStorage(croppedToScreen, file2);
-        croppedToScreen.recycle();
-        croppedToScreen=null;
+    public void printDimensions(Bitmap source, double heightFactor, int maxWidth, int sourceHeight){
 
-        scaledToScreenWidth = ScaleToScreenWidth.scale(source);
-        saveToExternalStorage(scaledToScreenWidth, file3);
-        scaledToScreenWidth.recycle();
-        scaledToScreenWidth=null;
+        Log.v("TAG","---------------------------");
+        Log.v("TAG","source height :"+String.valueOf(source.getHeight()));
+        Log.v("TAG","source width  :"+String.valueOf(source.getWidth()));
+        Log.v("TAG","max width     :"+String.valueOf(maxWidth));
+        Log.v("TAG","heightFactor  :"+String.valueOf(heightFactor));
+        Log.v("TAG","---------------------------");
+    }
 
+    public void writeUrisToSongObjects(AlbumObject albumObject, String fileName1, String fileName2, String fileName3){
+
+        for(int i=0;i<albumObject.songObjectList.size();i++){
+            albumObject.songObjectList.get(i).albumArtURI = fileName1;
+            albumObject.songObjectList.get(i).albumArtURICenterCroppedToScreen = fileName2;
+            albumObject.songObjectList.get(i).albumArtURIScaledToScreenWidth = fileName3;
+        }
     }
 
     private void saveToExternalStorage(Bitmap source, File file){

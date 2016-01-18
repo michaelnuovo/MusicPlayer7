@@ -1,31 +1,33 @@
 package com.example.michael.myapplication.Activities;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
-import com.example.michael.myapplication.Adapters.PageAdapterInfoPanel;
-import com.example.michael.myapplication.Adapters.PageAdapterPlayPanel;
+import com.eftimoff.viewpagertransformers.RotateUpTransformer;
+import com.example.michael.myapplication.Adapters.PageAdapterBackground;
+import com.example.michael.myapplication.Adapters.PageAdapterMini;
 import com.example.michael.myapplication.Adapters.ResetInfoPanelAdapters;
 import com.example.michael.myapplication.R;
+import com.example.michael.myapplication.Tranformations.DepthPageTransformer;
 import com.example.michael.myapplication.Tranformations.FadePageTransformer;
+import com.example.michael.myapplication.Tranformations.ZoomOutPageTransformer;
+import com.example.michael.myapplication.Utilities.Dimensions;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 
-import java.io.IOException;
-
 public class PlayPanel extends AppCompatActivity {
+
+    @Override
+    public void onBackPressed() {
+        //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,50 +42,88 @@ public class PlayPanel extends AppCompatActivity {
         //ViewPager viewPager = (ViewPager) findViewById(R.id.infoPanelPager);
         //viewPager.setAdapter(pageAdapterInfoPanel);
 
-        ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
 
+
+        /*
         final RelativeLayout playPanelLayout = (RelativeLayout) findViewById(R.id.playPanelLayout);
         Bitmap bm = BitmapFactory.decodeFile(StaticMusicPlayer.getPlayList().get(StaticMusicPlayer.getCurrentIndex()).albumArtURI);
         Drawable dw = new BitmapDrawable(bm);
         Bitmap blurred = Bitmap.createScaledBitmap(bm, 5, 5, true);
         Drawable dw2 = new BitmapDrawable(blurred);
-        playPanelLayout.setBackground(dw2);
+        playPanelLayout.setBackground(dw2);*/
 
-        final PageAdapterPlayPanel adapter = new PageAdapterPlayPanel(this, StaticMusicPlayer.getPlayList());
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.playPanelViewPager);
-        viewPager.setAdapter(adapter);
-        viewPager.setPageTransformer(false, new FadePageTransformer());
+        //First pager and adapter
+        final PageAdapterBackground backgroundAdapter = new PageAdapterBackground(this, StaticMusicPlayer.getPlayList());
+        final ViewPager backgroundViewPager = (ViewPager) findViewById(R.id.backgroundViewPager);
+        backgroundViewPager.setAdapter(backgroundAdapter);
+        backgroundViewPager.setPageTransformer(false, new FadePageTransformer());
+        backgroundViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());
 
-        final ViewPager viewPager2 = (ViewPager) findViewById(R.id.playPanelViewPager2);
-        viewPager2.setAdapter(adapter);
+        //Second pager and adapter
+        final PageAdapterMini miniAdapter = new PageAdapterMini(this, StaticMusicPlayer.getPlayList());
+        final ViewPager miniViewPager = (ViewPager) findViewById(R.id.miniViewPager);
+        miniViewPager.setAdapter(miniAdapter);
+        miniViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());
+        //miniViewPager.setPageTransformer(false, new DepthPageTransformer());
+        miniViewPager.setPageTransformer(true, new RotateUpTransformer());
+        //Second pager dimensions
+        //miniViewPager.getLayoutParams().width = Dimensions.getWidth();
+        //miniViewPager.getLayoutParams().height = Dimensions.getHeight();
+        //Second pager padding
+        //float scale = getResources().getDisplayMetrics().density;
+        //int sizeInDp = 15; //Set padding in dp here
+        //int dpAsPixels = (int) (sizeInDp*scale + 0.5f);//Converts dp to pixels
+        //miniViewPager.setPadding(0,dpAsPixels,0,0);//Sets padding in pixels
+        setPagerListeners(backgroundViewPager,miniViewPager);
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                fab.setBackground(getDrawable(R.drawable.button_pause_notfocused_pressed));
-            }
-        });
+        sliderListener sldListener = new sliderListener();
+        SeekBar songProgressBar = (SeekBar) findViewById(R.id.songProgressBar);
+        songProgressBar.setOnSeekBarChangeListener(sldListener);
 
-        viewPager.setOnTouchListener(new View.OnTouchListener() {
+        try {
+            Thread.sleep(1000);
+            //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private class sliderListener implements SeekBar.OnSeekBarChangeListener {
+        private int smoothnessFactor = 10;
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            //progress = Math.round(progress / smoothnessFactor);
+            //TextView lblProgress = (TextView) findViewById(R.id.songProgressBar);
+            //lblProgress.setText(String.valueOf(progress));
+        }
+
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            seekBar.setProgress(Math.round((seekBar.getProgress() + (smoothnessFactor / 2)) / smoothnessFactor) * smoothnessFactor);
+        }
+    }
+
+    public void setPagerListeners(final ViewPager backgroundViewPager, final ViewPager miniViewPager){
+
+        backgroundViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                viewPager2.onTouchEvent(event);
+                miniViewPager.onTouchEvent(event);
                 return false;
             }
         });
 
-        viewPager2.setOnTouchListener(new View.OnTouchListener() {
+        miniViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                viewPager.onTouchEvent(event);
+                backgroundViewPager.onTouchEvent(event);
                 return false;
             }
         });
 
-        /*
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        miniViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             public void onPageScrollStateChanged(int state) {
             }
 
@@ -92,10 +132,10 @@ public class PlayPanel extends AppCompatActivity {
             }
 
             public void onPageSelected(int position) {
-
+                backgroundViewPager.setCurrentItem(position);
+                StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(position));
             }
-        });*/
+        });
     }
-
-
 }
+

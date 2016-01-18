@@ -12,8 +12,8 @@ public class AlbumObject implements Parcelable {
     public int albumTrackCount = 0;
     public int albumId;
     public String albumArtURI;
-    public String albumArtURI_Center_Cropped_To_Sreen;
-    public String getAlbumArtURI_Scaled_To_Screen_Width;
+    public String albumArtURICenterCroppedToScreen;
+    public String albumArtURIScaledToScreenWidth;
     public ArrayList<SongObject> songObjectList = new ArrayList<>();
 
     public int lastFmRequestErrorNumber = 0;
@@ -48,8 +48,8 @@ public class AlbumObject implements Parcelable {
         albumTitle = in.readString();
         albumArtist = in.readString();
         albumArtURI = in.readString();
-        albumArtURI_Center_Cropped_To_Sreen = in.readString();
-        getAlbumArtURI_Scaled_To_Screen_Width = in.readString();
+        albumArtURICenterCroppedToScreen = in.readString();
+        albumArtURIScaledToScreenWidth = in.readString();
         albumTrackCount = in.readInt();
         amazonRequestErrorNumber = in.readInt();
         spotifyRequestErrorNumber = in.readInt();
@@ -74,8 +74,8 @@ public class AlbumObject implements Parcelable {
 
     public void readFromParcel(Parcel in) {
         albumArtURI = in.readString();
-        albumArtURI_Center_Cropped_To_Sreen = in.readString();
-        getAlbumArtURI_Scaled_To_Screen_Width = in.readString();
+        albumArtURICenterCroppedToScreen = in.readString();
+        albumArtURIScaledToScreenWidth = in.readString();
         albumTitle = in.readString();
         albumArtist = in.readString();
 
@@ -94,8 +94,8 @@ public class AlbumObject implements Parcelable {
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(albumArtURI);
-        dest.writeString(albumArtURI_Center_Cropped_To_Sreen);
-        dest.writeString(getAlbumArtURI_Scaled_To_Screen_Width);
+        dest.writeString(albumArtURICenterCroppedToScreen);
+        dest.writeString(albumArtURIScaledToScreenWidth);
         dest.writeString(albumTitle);
         dest.writeString(albumArtist);
 

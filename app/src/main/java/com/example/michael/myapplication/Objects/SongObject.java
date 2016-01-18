@@ -8,6 +8,9 @@ public class SongObject implements Parcelable {
     // My Code
 
     public String albumArtURI;
+    public String albumArtURICenterCroppedToScreen;
+    public String albumArtURIScaledToScreenWidth;
+
     public String albumArtURI_InfoPanel;
     public String albumTitle;
     public String artist;
@@ -21,7 +24,9 @@ public class SongObject implements Parcelable {
     public SongObject copy(SongObject so){
 
         so.albumArtURI = albumArtURI;
-        so.albumArtURI = albumArtURI_InfoPanel;
+        so.albumArtURI_InfoPanel = albumArtURI_InfoPanel;
+        so.albumArtURICenterCroppedToScreen = albumArtURICenterCroppedToScreen;
+        so.albumArtURIScaledToScreenWidth = albumArtURIScaledToScreenWidth;
         so.albumTitle=albumTitle;
         so.artist=artist;
         so.songTitle=songTitle;
@@ -60,6 +65,8 @@ public class SongObject implements Parcelable {
     public void readFromParcel(Parcel in) {
         albumArtURI = in.readString();
         albumArtURI_InfoPanel = in.readString();
+        albumArtURICenterCroppedToScreen = in.readString();
+        albumArtURIScaledToScreenWidth = in.readString();
         albumTitle = in.readString();
         artist = in.readString();
         songTitle = in.readString();
@@ -79,6 +86,8 @@ public class SongObject implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(albumArtURI);
         dest.writeString(albumArtURI_InfoPanel);
+        dest.writeString(albumArtURICenterCroppedToScreen);
+        dest.writeString(albumArtURIScaledToScreenWidth);
         dest.writeString(albumTitle);
         dest.writeString(artist);
         dest.writeString(songTitle);

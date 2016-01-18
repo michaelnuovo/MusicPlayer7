@@ -47,8 +47,8 @@ public class ResetInfoPanelAdapters {
 
 
 
-        if(null != singleArtistActivityAdapter){singleArtistActivityViewPager.setAdapter(singleArtistActivityAdapter);singleArtistActivityViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());}
-        if(null != singleAlbumActivityAdapter){singleAlbumActivityViewPager.setAdapter(singleAlbumActivityAdapter);singleAlbumActivityViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());}
-        if(null != songsListFragmentAdapter){songsListFragmentViewPager.setAdapter(songsListFragmentAdapter);songsListFragmentViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex()); }
+        if(null != singleArtistActivityAdapter){singleArtistActivityViewPager.setAdapter(singleArtistActivityAdapter);singleArtistActivityAdapter.notifyDataSetChanged();singleArtistActivityViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());}
+        if(null != singleAlbumActivityAdapter){singleAlbumActivityViewPager.setAdapter(singleAlbumActivityAdapter);singleAlbumActivityAdapter.notifyDataSetChanged();singleAlbumActivityViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());}
+        if(null != songsListFragmentAdapter){songsListFragmentViewPager.setAdapter(songsListFragmentAdapter);songsListFragmentAdapter.notifyDataSetChanged();songsListFragmentViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex()); }
     }
 }

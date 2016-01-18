@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.example.michael.myapplication.Networking.LastFmAlbumLookup;
 import com.example.michael.myapplication.Objects.AlbumObject;
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
 
     public void doNetworkingStuff(){
-        //MediaStoreInterface mint = new MediaStoreInterface(ctx);
+        MediaStoreInterface mint = new MediaStoreInterface(ctx);
         //mint.clearFolder("myalbumart");
 
         AlbumArt aa = new AlbumArt(this,albumObjectList);
@@ -49,13 +51,15 @@ public class MainActivity extends AppCompatActivity {
         LastFmAlbumLookup lf = new LastFmAlbumLookup(this,albumObjectList);
         lf.makeRequest();
 
-        //printAlbums();
+        printAlbums();
     }
 
     public void printAlbums(){
         for(int i=0;i<albumObjectList.size();i++){
             Log.v("TAG","albumObjectList.get(i).albumTitle is "+albumObjectList.get(i).albumTitle);
             Log.v("TAG","albumObjectList.get(i).albumArtURI uri is "+albumObjectList.get(i).albumArtURI);
+            Log.v("TAG","albumObjectList.get(i).albumArtURICenterCroppedToScreen is "+albumObjectList.get(i).albumArtURICenterCroppedToScreen);
+            Log.v("TAG","albumArtURIScaledToScreenWidth is "+albumObjectList.get(i).albumArtURIScaledToScreenWidth);
         }
     }
 
@@ -75,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
-
-
         List<Fragment> fragments = getFragments(songObjectList, artistObjectList, albumObjectList);
         pageAdapter = new PageAdapterMainActivity(getSupportFragmentManager(), fragments);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -88,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+
 
         tabLayout.getTabAt(0).setIcon(R.drawable.icon_playlist);
         tabLayout.getTabAt(1).setIcon(R.drawable.icon_heart);
@@ -109,8 +113,12 @@ public class MainActivity extends AppCompatActivity {
             Log.v("TAG", "album title: " + albumObjectList.get(i).albumTitle);
         }
 
+
+
         doNetworkingStuff();
     }
+
+
 
     private List<Fragment> getFragments(ArrayList<SongObject> songObjectList,
                                         ArrayList<ArtistObject> artistObjectList,

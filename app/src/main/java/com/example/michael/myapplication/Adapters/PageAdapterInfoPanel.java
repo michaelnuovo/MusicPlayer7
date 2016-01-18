@@ -6,24 +6,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.text.Layout;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.michael.myapplication.Activities.PlayPanel;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.R;
 import com.example.michael.myapplication.Utilities.BitmapDarken;
-import com.example.michael.myapplication.Utilities.FastBlur;
 import com.example.michael.myapplication.Utilities.ScaleCenterCrop;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 
@@ -79,19 +76,31 @@ public class PageAdapterInfoPanel extends PagerAdapter {
 
     public void setViewPagerBackground(ViewGroup layout, int position){
 
-        if(new File(songObjectList.get(position).albumArtURI).exists()){
+        if(null!=songObjectList.get(position).albumArtURI){
+            File imageFile = new File(songObjectList.get(position).albumArtURI);
+            if(imageFile.exists()){
 
-            Point size = new Point();
-            Display display = ((WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            display.getSize(size);
-            int width = size.x;
-            //int height = size.y;
+                Point size = new Point();
+                Display display = ((WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                display.getSize(size);
+                Bitmap bm = BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI); //h/w
 
-            Bitmap bm = ScaleCenterCrop.scaleCenterCrop(BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI), dpToPx(150), width); //h/w
-            //Bitmap bmb = FastBlur.fastblur(bm, 1, 5);
-            Bitmap bmd = BitmapDarken.darkenBitMap(bm);
-            BitmapDrawable dw = new BitmapDrawable(bmd);
-            layout.setBackgroundDrawable(dw);
+                if(null==bm){
+                    ScaleCenterCrop scaleCenterCrop = new ScaleCenterCrop();
+                    Bitmap filler = ScaleCenterCrop.getFillerAlbum();
+
+                    BitmapDrawable dw = new BitmapDrawable(filler);
+                    layout.setBackgroundDrawable(dw);
+                    scaleCenterCrop.recycleBitmaps();
+                    filler.recycle();
+                }
+                if(null!=bm){
+
+                    //Bitmap bmd = BitmapDarken.darkenBitMap(bm);
+                    BitmapDrawable dw = new BitmapDrawable(bm);
+                    layout.setBackgroundDrawable(dw);
+                }
+            }
         }
     }
 

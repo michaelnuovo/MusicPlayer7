@@ -1,13 +1,47 @@
 package com.example.michael.myapplication.Utilities;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
 
+import com.example.michael.myapplication.Activities.MainActivity;
+import com.example.michael.myapplication.R;
+
 public class ScaleCenterCrop {
 
-    public static Bitmap scaleCenterCrop(Bitmap source, int newHeight, int newWidth) {
+    static Bitmap dest;
+    static Bitmap fillerAlbum;
+
+    public void recycleBitmaps(){
+
+        dest.recycle();
+        dest=null;
+    }
+
+    static public Bitmap getFillerAlbum(){
+        if(null==fillerAlbum){
+            fillerAlbum = BitmapFactory.decodeResource(MainActivity.getAppContext().getResources(), R.drawable.filler_empty_black_album);
+            return fillerAlbum;
+        } else {
+            return fillerAlbum;
+        }
+    }
+
+    public Bitmap scale(Bitmap source) {
+
+
+        int screenHeight = Dimensions.getHeight();
+        int screenWidth = Dimensions.getWidth();
+
+        double scaleFactorHeight = screenHeight/screenWidth;
+
+        int newHeight=source.getHeight();
+
+        int newWidth=(int)(source.getHeight()*scaleFactorHeight);
+
+
         int sourceWidth = source.getWidth();
         int sourceHeight = source.getHeight();
 
@@ -36,7 +70,7 @@ public class ScaleCenterCrop {
         // Finally, we create a new bitmap of the specified size and draw our new,
         // scaled bitmap onto it.
 
-        Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
+        dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
         Canvas canvas = new Canvas(dest);
         canvas.drawBitmap(source, null, targetRect, null);
 

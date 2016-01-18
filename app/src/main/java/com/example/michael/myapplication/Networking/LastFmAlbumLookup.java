@@ -146,7 +146,7 @@ public class LastFmAlbumLookup {
 
                 /** Retry logic **/
                 albumObject.lastFmRequestErrorNumber += 1;
-                if(albumObject.lastFmRequestErrorNumber < 5) { //let try five times
+                if(albumObject.lastFmRequestErrorNumber < 20) { //let try five times
                     makeRequest();
                 } else {
                     Log.v("TAG","Using spotify");

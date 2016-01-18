@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.michael.myapplication.Objects.SongObject;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class StaticMusicPlayer {
 
@@ -73,5 +74,19 @@ public class StaticMusicPlayer {
                 }
             }
         });
+    }
+
+    static public ArrayList<SongObject> returnShuffledList(ArrayList<SongObject> songObjectList){
+
+        // Create new List with same capacity as original (for efficiency).
+        ArrayList<SongObject> copy = new ArrayList<SongObject>(songObjectList.size());
+
+        for (SongObject foo: songObjectList) {
+            copy.add(foo.copy(new SongObject()));
+        }
+
+        Collections.shuffle(copy);
+
+        return copy;
     }
 }
