@@ -26,8 +26,13 @@ import java.util.ArrayList;
 
 public class SingleAlbum extends AppCompatActivity {
 
-    ArrayList<SongObject> songObjectList;
-
+    @Override
+    public void onBackPressed() {
+        //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
+        System.gc();
+        finish();
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -35,7 +40,6 @@ public class SingleAlbum extends AppCompatActivity {
         setContentView(R.layout.activity_single_artist);
 
         //Set play list
-        songObjectList = FragmentAlbumList.getSelectedAlbum().songObjectList;
         //StaticMusicPlayer.setPlayList(songObjectList);
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -53,18 +57,15 @@ public class SingleAlbum extends AppCompatActivity {
         });
 
         //List adapter
-        FragmentListAdapterSongsList adapter = new FragmentListAdapterSongsList(this, R.layout.list_item_songs_fragment, songObjectList);
+        FragmentListAdapterSongsList adapter = new FragmentListAdapterSongsList(this, R.layout.list_item_songs_fragment, FragmentAlbumList.albumSelectedFromListView.songObjectList);
         listView = (ListView) findViewById(R.id.fragmentListView);
         listView.setAdapter(adapter);
 
-        //Page Adapter
-        PageAdapterInfoPanel pageAdapterInfoPanel = new PageAdapterInfoPanel(this, songObjectList);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.infoPanelPager);
-        viewPager.setAdapter(pageAdapterInfoPanel);
-
-        //Pass the view pager and the adapter to the ResetInfoPanelAdapters class for future resetting (when the play panel opens)
-        ResetInfoPanelAdapters.setSongListFragmentPager(pageAdapterInfoPanel);
-        ResetInfoPanelAdapters.setSongsListFragmentViewPager(viewPager);
+        //Information Panel Page Adapter
+        PageAdapterInfoPanel pageAdapterInfoPanel = PageAdapterInfoPanel.getInstance(this,FragmentAlbumList.albumSelectedFromListView.songObjectList);
+        ViewPager infoPanelPager = (ViewPager) findViewById(R.id.infoPanelPager);
+        infoPanelPager.setAdapter(pageAdapterInfoPanel);
+        infoPanelPager.setCurrentItem(0);
 
         //Update Adapters
         UpdateAdapters.getInstance().setAdapterOne(adapter, listView);

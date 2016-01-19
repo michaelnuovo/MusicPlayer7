@@ -64,6 +64,8 @@ public class FragmentAlbumList extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
+                System.gc();
+
                 Intent intent = new Intent(getActivity(), SingleAlbum.class);
                 startActivity(intent);
 

@@ -4,26 +4,20 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
-import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.example.michael.myapplication.Activities.MainActivity;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.R;
-import com.example.michael.myapplication.Tranformations.CircleTransform;
-import com.example.michael.myapplication.Utilities.Dimensions;
-import com.example.michael.myapplication.Utilities.ScaleCenterCrop;
-import com.squareup.picasso.Picasso;
+import com.example.michael.myapplication.Utilities.MyBitmaps;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -48,11 +42,31 @@ public class PageAdapterMini extends PagerAdapter {
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.pager_layout_mini, collection, false); //a view group is a layout, a view is a child of a view group
         collection.addView(layout);
 
-        //setViewPagerBackgroundWithPicasso(layout, position);
-        setViewPagerBackground(layout, position);
+        layout.setTag(position);
+        Drawable drbl = getDrawable(layout, position);
+        layout.setBackground(drbl);
+        System.gc();
+
 
         return layout;
 
+    }
+
+    public Drawable getDrawable(final ViewGroup layout, int position){
+
+        if(!MyBitmaps.hashMap.containsKey(String.valueOf(position))){ //if the hash map does not contain the drawable then make one
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = false;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            options.inDither = true;
+            Bitmap bm = BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI,options);
+            BitmapDrawable drbl = new BitmapDrawable(bm);
+            MyBitmaps.hashMap.put(String.valueOf(position), drbl);
+            MyBitmaps.trimHashList(MyBitmaps.hashMap, position);
+            return drbl;
+        } else {
+            return (Drawable) MyBitmaps.hashMap.get(String.valueOf(position));
+        }
     }
 
     public void setViewPagerBackground(final ViewGroup layout, final int position){
@@ -62,9 +76,15 @@ public class PageAdapterMini extends PagerAdapter {
         if(null!=songObjectList.get(position).albumArtURI){
             File imageFile = new File(songObjectList.get(position).albumArtURI);
             if(imageFile.exists()){
-                Bitmap bm = BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI);
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = false;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                options.inDither = true;
+
+                Bitmap bm = BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI,options);
                 if(null==bm){
-                    Bitmap filler = ScaleCenterCrop.getFillerAlbum();
+                    Bitmap filler = MyBitmaps.getFillerAlbum();
                     setViewDimensions(500, 500, layout);
                     //iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                     BitmapDrawable drbl = new BitmapDrawable(filler);

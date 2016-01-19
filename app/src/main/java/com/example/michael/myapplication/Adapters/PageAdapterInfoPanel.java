@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -13,14 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.michael.myapplication.Activities.PlayPanel;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.R;
-import com.example.michael.myapplication.Utilities.BitmapDarken;
+import com.example.michael.myapplication.Utilities.MyBitmaps;
 import com.example.michael.myapplication.Utilities.ScaleCenterCrop;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 
@@ -31,12 +30,24 @@ import java.util.ArrayList;
 public class PageAdapterInfoPanel extends PagerAdapter {
 
     Context ctx;
-    ArrayList<SongObject> songObjectList;
+    static ArrayList<SongObject> songObjectList;
+    public static PageAdapterInfoPanel pageAdapterInfoPanel;
 
     public PageAdapterInfoPanel(Context ctx, ArrayList<SongObject> songObjectList) {
 
         this.ctx = ctx;
         this.songObjectList=songObjectList;
+    }
+
+    public static PageAdapterInfoPanel getInstance(Context ctx, ArrayList<SongObject> _songObjectList){
+        if(pageAdapterInfoPanel==null){
+            pageAdapterInfoPanel=new PageAdapterInfoPanel(ctx, _songObjectList);
+            return pageAdapterInfoPanel;
+        }else{
+            songObjectList = _songObjectList; //need to reset the list that will be adapted
+            pageAdapterInfoPanel.notifyDataSetChanged();
+            return pageAdapterInfoPanel;
+        }
     }
 
     @Override
@@ -55,10 +66,30 @@ public class PageAdapterInfoPanel extends PagerAdapter {
 
         setPanelClickListener(layout, position);
 
-        setViewPagerBackground(layout, position);
+        layout.setTag(position);
+        Drawable drbl = getDrawable(layout, position);
+        layout.setBackground(drbl);
+        System.gc();
 
         return layout;
 
+    }
+
+    public Drawable getDrawable(final ViewGroup layout, int position){
+
+        if(!MyBitmaps.hashMap.containsKey(String.valueOf(position))){ //if the hash map does not contain the drawable then make one
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = false;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            options.inDither = true;
+            Bitmap bm = BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI,options);
+            BitmapDrawable drbl = new BitmapDrawable(bm);
+            MyBitmaps.hashMap.put(String.valueOf(position),drbl);
+            MyBitmaps.trimHashList(MyBitmaps.hashMap, position);
+            return drbl;
+        } else {
+            return (Drawable) MyBitmaps.hashMap.get(String.valueOf(position));
+        }
     }
 
     public void setPanelClickListener(ViewGroup layout, final int position){
@@ -80,14 +111,19 @@ public class PageAdapterInfoPanel extends PagerAdapter {
             File imageFile = new File(songObjectList.get(position).albumArtURI);
             if(imageFile.exists()){
 
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = false;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                options.inDither = true;
+
                 Point size = new Point();
                 Display display = ((WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
                 display.getSize(size);
-                Bitmap bm = BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI); //h/w
+                Bitmap bm = BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI, options); //h/w
 
                 if(null==bm){
                     ScaleCenterCrop scaleCenterCrop = new ScaleCenterCrop();
-                    Bitmap filler = ScaleCenterCrop.getFillerAlbum();
+                    Bitmap filler = MyBitmaps.getFillerAlbum();
 
                     BitmapDrawable dw = new BitmapDrawable(filler);
                     layout.setBackgroundDrawable(dw);

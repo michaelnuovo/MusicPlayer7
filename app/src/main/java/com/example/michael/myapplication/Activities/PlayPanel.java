@@ -26,6 +26,7 @@ public class PlayPanel extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
+        System.gc();
         finish();
     }
 
@@ -33,6 +34,7 @@ public class PlayPanel extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_panel);
+        System.gc();
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);

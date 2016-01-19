@@ -52,6 +52,8 @@ public class FragmentSongList extends Fragment {
             @Override
             public void onClick(View view) {
 
+                System.gc();
+
                 Intent intent = new Intent(getActivity(), PlayPanel.class);
                 startActivity(intent);
                 ArrayList<SongObject> shuffedPlayList = StaticMusicPlayer.returnShuffledList(songObjectList);
@@ -67,11 +69,11 @@ public class FragmentSongList extends Fragment {
         listView = (ListView) rootView.findViewById(R.id.fragmentListView);
         listView.setAdapter(adapter);
 
-        //Page Adapter
-        PageAdapterInfoPanel pageAdapterInfoPanel = new PageAdapterInfoPanel(getActivity(), songObjectList);
+        //Information Panel Page Adapter
+        PageAdapterInfoPanel pageAdapterInfoPanel = PageAdapterInfoPanel.getInstance(getActivity(),songObjectList);
         ViewPager infoPanelPager = (ViewPager) rootView.findViewById(R.id.infoPanelPager);
         infoPanelPager.setAdapter(pageAdapterInfoPanel);
-        infoPanelPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());
+        infoPanelPager.setCurrentItem(0);
 
         //Pass the view pager and the adapter to the ResetInfoPanelAdapters class for future resetting (when the play panel opens)
         ResetInfoPanelAdapters.setSongListFragmentPager(pageAdapterInfoPanel);
@@ -106,7 +108,7 @@ public class FragmentSongList extends Fragment {
             public void onPageSelected(int position) { //this returns true during another fragment for some reason!
                 Log.v("TAG","Page selected here");
                 if(onPageScrollStateChanged == true){ // this also needs to be true, and will be true first
-                    StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(position));
+                    //StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(position));
                     onPageScrollStateChanged = false; // reset to false
                 }
             }
@@ -122,8 +124,11 @@ public class FragmentSongList extends Fragment {
                 Log.v("TAG", "List item click position is : " + String.valueOf(arg2));
                 Log.v("TAG", "Song object list size is : " + String.valueOf(StaticMusicPlayer.getPlayList().size()));
 
+                System.gc();
+
                 Intent intent = new Intent(getActivity(), PlayPanel.class);
                 startActivity(intent);
+                StaticMusicPlayer.setPlayList(songObjectList);
                 StaticMusicPlayer.tryToPlaySong(songObjectList.get(arg2));
             }
         });

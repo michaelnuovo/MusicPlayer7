@@ -51,8 +51,8 @@ public class StaticMusicPlayer {
 
     private static void playSong(SongObject songObject) throws IllegalArgumentException, IllegalStateException, IOException {
 
-        Log.v("TAG","Current album set is : "+songObjectList.get(currentIndex).albumTitle);
-        Log.v("TAG","Current song set is : "+songObjectList.get(currentIndex).songTitle);
+        //Log.v("TAG","Current album set is : "+songObjectList.get(currentIndex).albumTitle);
+        //Log.v("TAG","Current song set is : "+songObjectList.get(currentIndex).songTitle);
 
         musicPlayer.reset();
         musicPlayer.reset();

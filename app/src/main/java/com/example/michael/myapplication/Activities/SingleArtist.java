@@ -15,6 +15,7 @@ import com.example.michael.myapplication.Adapters.FragmentListAdapterSongsList;
 import com.example.michael.myapplication.Adapters.PageAdapterInfoPanel;
 import com.example.michael.myapplication.Adapters.ResetInfoPanelAdapters;
 import com.example.michael.myapplication.Adapters.UpdateAdapters;
+import com.example.michael.myapplication.Fragments.FragmentAlbumList;
 import com.example.michael.myapplication.Fragments.FragmentArtistList;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.R;
@@ -24,7 +25,12 @@ import java.util.ArrayList;
 
 public class SingleArtist extends AppCompatActivity {
 
-    ArrayList<SongObject> songObjectList;
+    @Override
+    public void onBackPressed() {
+        //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
+        System.gc();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +39,8 @@ public class SingleArtist extends AppCompatActivity {
         setContentView(R.layout.activity_single_artist);
 
         //Set the play list
-        songObjectList = FragmentArtistList.getSelectedArtist().songObjectList;
+
+        //PageAdapterInfoPanel.pageAdapterInfoPanel.notifyDataSetChanged();
         //StaticMusicPlayer.setPlayList(songObjectList);
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -52,19 +59,15 @@ public class SingleArtist extends AppCompatActivity {
 
 
         //List adapter
-        FragmentListAdapterSongsList adapter = new FragmentListAdapterSongsList(this, R.layout.list_item_songs_fragment, songObjectList);
+        FragmentListAdapterSongsList adapter = new FragmentListAdapterSongsList(this, R.layout.list_item_songs_fragment, FragmentArtistList.artistSelectedFromListView.songObjectList);
         listView = (ListView) findViewById(R.id.fragmentListView);
         listView.setAdapter(adapter);
 
-        //Page Adapter
-        PageAdapterInfoPanel pageAdapterInfoPanel = new PageAdapterInfoPanel(this, songObjectList);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.infoPanelPager);
-        viewPager.setAdapter(pageAdapterInfoPanel);
-
-        //Pass the view pager and the adapter to the ResetInfoPanelAdapters class for future resetting (when the play panel opens)
-        ResetInfoPanelAdapters.setSongListFragmentPager(pageAdapterInfoPanel);
-        ResetInfoPanelAdapters.setSongsListFragmentViewPager(viewPager);
-
+        //Information Panel Page Adapter
+        PageAdapterInfoPanel pageAdapterInfoPanel = PageAdapterInfoPanel.getInstance(this,FragmentArtistList.artistSelectedFromListView.songObjectList);
+        ViewPager infoPanelPager = (ViewPager) findViewById(R.id.infoPanelPager);
+        infoPanelPager.setAdapter(pageAdapterInfoPanel);
+        infoPanelPager.setCurrentItem(0);
 
         //Update Adapters
         UpdateAdapters.getInstance().setAdapterOne(adapter, listView);
@@ -81,7 +84,7 @@ public class SingleArtist extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), PlayPanel.class);
                 startActivity(intent);
-                StaticMusicPlayer.setPlayList(MainActivity.getArtistObjectList().get(FragmentArtistList.currentArtistIndex).songObjectList);
+                StaticMusicPlayer.setPlayList(FragmentArtistList.artistSelectedFromListView.songObjectList);
                 StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(arg2));
             }
         });

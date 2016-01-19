@@ -9,11 +9,8 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 
 import com.example.michael.myapplication.Activities.MainActivity;
 import com.example.michael.myapplication.Objects.AlbumObject;
@@ -44,20 +41,36 @@ public class SaveBitMapToDisk {
         imagePath1 = myDir + "/" + fileName1;
         File file1 = new File(myDir, fileName1);
         if (file1.exists()) file1.delete();
-        saveToExternalStorage(scale(source), file1);
-        source.recycle();
-        source=null;
+
+        Bitmap scaledBitMap = scaleToAcceptableSize(source); //scales proportionally to width of 500 pixels
+        Bitmap convertedBitmap = convert(scaledBitMap, Bitmap.Config.RGB_565); //converts to RGB_565 to reduce memory size by a factor of 2 if the image is ARGB_8888; see http://stackoverflow.com/questions/6480182/how-can-i-specify-the-bitmap-format-e-g-rgba-8888-with-bitmapfactory-decode
+        saveToExternalStorage(convertedBitmap, file1);
+
+        scaledBitMap.recycle();
+        convertedBitmap.recycle();
+        System.gc();
     }
 
-    public Bitmap scale(Bitmap source){
+
+    private Bitmap convert(Bitmap bitmap, Bitmap.Config config) {
+        Bitmap convertedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+        Canvas canvas = new Canvas(convertedBitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return convertedBitmap;
+    }
+
+
+    public Bitmap scaleToAcceptableSize(Bitmap source){
+
         //All bit maps are scaled before they are saved to disk
-        int maxWidth = 500; //Must be at least two pixels long (a shorter length will collapse width to zero)
+        int maxWidth = 400; //Must be at least two pixels long (a shorter length will collapse width to zero)
         double heightFactor = (double) maxWidth / (double) source.getWidth();
         int sourceHeight = source.getHeight();
         Bitmap finalBm = Bitmap.createScaledBitmap(source,maxWidth,(int)(sourceHeight*heightFactor),false); //width/height
         //printDimensions(source, heightFactor, maxWidth, sourceHeight);
-        source.recycle();
-        source=null;
+        //source.recycle();
         return finalBm;
     }
 

@@ -12,7 +12,6 @@ import com.example.michael.myapplication.R;
 public class ScaleCenterCrop {
 
     static Bitmap dest;
-    static Bitmap fillerAlbum;
 
     public void recycleBitmaps(){
 
@@ -20,14 +19,7 @@ public class ScaleCenterCrop {
         dest=null;
     }
 
-    static public Bitmap getFillerAlbum(){
-        if(null==fillerAlbum){
-            fillerAlbum = BitmapFactory.decodeResource(MainActivity.getAppContext().getResources(), R.drawable.filler_empty_black_album);
-            return fillerAlbum;
-        } else {
-            return fillerAlbum;
-        }
-    }
+
 
     public Bitmap scale(Bitmap source) {
 

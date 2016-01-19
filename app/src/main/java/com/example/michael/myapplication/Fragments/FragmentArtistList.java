@@ -29,10 +29,7 @@ public class FragmentArtistList extends Fragment {
 
     private static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
     private ArrayList<ArtistObject> artistObjectList;
-    static private ArtistObject artistSelectedFromListView;
-    static public int currentArtistIndex;
-
-    static public ArtistObject getSelectedArtist(){return artistSelectedFromListView;}
+    static public ArtistObject artistSelectedFromListView;
 
     public static final FragmentArtistList newInstance(ArrayList<ArtistObject> arrayList)
     {
@@ -70,10 +67,11 @@ public class FragmentArtistList extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
+                System.gc();
+
                 Intent intent = new Intent(getActivity(), SingleArtist.class);
                 startActivity(intent);
 
-                currentArtistIndex = arg2;
                 artistSelectedFromListView = artistObjectList.get(arg2);
             }
         });
