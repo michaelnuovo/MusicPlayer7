@@ -3,13 +3,28 @@ package com.example.michael.myapplication.Adapters;
 import android.util.Log;
 import android.widget.ListView;
 
+/**
+ * This class is called from the image downloader class(es)
+ * every time a new image is downloaded for an album.
+ * The purpose is to update the application's adapters within a single class
+ * every time a new image is downloaded. Therefore, every adapter, and every new adapter
+ * should be set as fields.
+ *
+ * This class may have been made simpler using a hash map to contain the adapters.
+ */
+
 public class UpdateAdapters {
 
     private static UpdateAdapters instance = null;
 
+    //Fragment adapters
     private FragmentListAdapterArtistList fragmentListAdapterArtistList;
     private FragmentListAdapterSongsList fragmentListAdapterSongsList;
     private FragmentGridViewAdapterAlbumList fragmentGridViewAdapterAlbumList;
+
+    //Information panel adapter
+    private PageAdapterInfoPanel pageAdapterInfoPanel;
+
 
     private ListView MyListViewTracks;
 
@@ -39,6 +54,10 @@ public class UpdateAdapters {
         this.fragmentGridViewAdapterAlbumList = fragmentGridViewAdapterAlbumList;
     }
 
+    public void setAdapterFour(PageAdapterInfoPanel pageAdapterInfoPanel){
+        this.pageAdapterInfoPanel=pageAdapterInfoPanel;
+    }
+
     //Public methods
     public void update(){
 
@@ -61,6 +80,13 @@ public class UpdateAdapters {
             Log.v("TAG", "myGridViewAdapter successfully updated ");
         } else {
             Log.v("TAG","myGridViewAdapter is a null reference ");
+        }
+
+        if(null != pageAdapterInfoPanel) {
+            pageAdapterInfoPanel.notifyDataSetChanged();
+            Log.v("TAG", "pageAdapterInfoPanel successfully updated ");
+        } else {
+            Log.v("TAG","pageAdapterInfoPanel is a null reference ");
         }
     }
 }

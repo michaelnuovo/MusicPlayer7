@@ -65,9 +65,9 @@ public class FragmentSongList extends Fragment {
         songObjectList = getArguments().getParcelableArrayList(EXTRA_MESSAGE);
 
         //List adapter
-        FragmentListAdapterSongsList adapter = new FragmentListAdapterSongsList(getActivity(), R.layout.list_item_songs_fragment, songObjectList);
+        FragmentListAdapterSongsList listAdapter = new FragmentListAdapterSongsList(getActivity(), R.layout.list_item_songs_fragment, songObjectList);
         listView = (ListView) rootView.findViewById(R.id.fragmentListView);
-        listView.setAdapter(adapter);
+        listView.setAdapter(listAdapter);
 
         //Information Panel Page Adapter
         PageAdapterInfoPanel pageAdapterInfoPanel = PageAdapterInfoPanel.getInstance(getActivity(),songObjectList);
@@ -80,7 +80,8 @@ public class FragmentSongList extends Fragment {
         ResetInfoPanelAdapters.setSongsListFragmentViewPager(infoPanelPager);
 
         //Update Adapters
-        UpdateAdapters.getInstance().setAdapterOne(adapter, listView);
+        UpdateAdapters.getInstance().setAdapterOne(listAdapter, listView);
+        UpdateAdapters.getInstance().setAdapterFour(pageAdapterInfoPanel);
 
         //Set list item click listener
         setListItemClickListener(listView);

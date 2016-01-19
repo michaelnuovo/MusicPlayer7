@@ -42,6 +42,7 @@ public class PageAdapterInfoPanel extends PagerAdapter {
     public static PageAdapterInfoPanel getInstance(Context ctx, ArrayList<SongObject> _songObjectList){
         if(pageAdapterInfoPanel==null){
             pageAdapterInfoPanel=new PageAdapterInfoPanel(ctx, _songObjectList);
+            pageAdapterInfoPanel.notifyDataSetChanged();
             return pageAdapterInfoPanel;
         }else{
             songObjectList = _songObjectList; //need to reset the list that will be adapted
@@ -138,6 +139,12 @@ public class PageAdapterInfoPanel extends PagerAdapter {
                 }
             }
         }
+    }
+
+    @Override
+    public int getItemPosition(Object object){
+        return POSITION_NONE; //This makes the view pager update; see "ViewPager PaderAdapter no updating the View" on SO
+                              //The view pager only updates a view when the position returns none
     }
 
     public int dpToPx(int dp) {
