@@ -80,13 +80,6 @@ public class PlayPanel extends AppCompatActivity {
         SeekBar songProgressBar = (SeekBar) findViewById(R.id.songProgressBar);
         songProgressBar.setOnSeekBarChangeListener(sldListener);
 
-        try {
-            Thread.sleep(1000);
-            //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
     }
 
     private class sliderListener implements SeekBar.OnSeekBarChangeListener {

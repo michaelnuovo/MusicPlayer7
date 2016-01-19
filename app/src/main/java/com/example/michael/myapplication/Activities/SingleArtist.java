@@ -34,7 +34,7 @@ public class SingleArtist extends AppCompatActivity {
 
         //Set the play list
         songObjectList = FragmentArtistList.getSelectedArtist().songObjectList;
-        StaticMusicPlayer.setPlayList(songObjectList);
+        //StaticMusicPlayer.setPlayList(songObjectList);
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
@@ -81,7 +81,8 @@ public class SingleArtist extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), PlayPanel.class);
                 startActivity(intent);
-                StaticMusicPlayer.tryToPlaySong(songObjectList.get(arg2));
+                StaticMusicPlayer.setPlayList(MainActivity.getArtistObjectList().get(FragmentArtistList.currentArtistIndex).songObjectList);
+                StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(arg2));
             }
         });
     }

@@ -30,6 +30,7 @@ public class FragmentSongList extends Fragment {
 
     private static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
     private ArrayList<SongObject> songObjectList;
+    boolean onPageScrollStateChanged = false;
 
     public static final FragmentSongList newInstance(ArrayList<SongObject> arrayList){
 
@@ -68,13 +69,13 @@ public class FragmentSongList extends Fragment {
 
         //Page Adapter
         PageAdapterInfoPanel pageAdapterInfoPanel = new PageAdapterInfoPanel(getActivity(), songObjectList);
-        ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.infoPanelPager);
-        viewPager.setAdapter(pageAdapterInfoPanel);
-        viewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());
+        ViewPager infoPanelPager = (ViewPager) rootView.findViewById(R.id.infoPanelPager);
+        infoPanelPager.setAdapter(pageAdapterInfoPanel);
+        infoPanelPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());
 
         //Pass the view pager and the adapter to the ResetInfoPanelAdapters class for future resetting (when the play panel opens)
         ResetInfoPanelAdapters.setSongListFragmentPager(pageAdapterInfoPanel);
-        ResetInfoPanelAdapters.setSongsListFragmentViewPager(viewPager);
+        ResetInfoPanelAdapters.setSongsListFragmentViewPager(infoPanelPager);
 
         //Update Adapters
         UpdateAdapters.getInstance().setAdapterOne(adapter, listView);
@@ -83,25 +84,31 @@ public class FragmentSongList extends Fragment {
         setListItemClickListener(listView);
 
 
-        setPagerListener(viewPager);
+        setPagerListener(infoPanelPager);
 
         return rootView;
     }
 
-    private void setPagerListener(ViewPager viewPager){
+    private void setPagerListener(ViewPager infoPanelPager){
 
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            public void onPageScrollStateChanged(int state) {
+
+
+        infoPanelPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrollStateChanged(int state) { //this doest not return true during another fragment as expected
+                Log.v("TAG","Page onPageScrollStateChanged here");
+                onPageScrollStateChanged = true;
             }
 
             public void onPageScrolled(final int position, float positionOffset, int positionOffsetPixels) {
-
+                Log.v("TAG","Page scrolled here");
             }
 
-            public void onPageSelected(int position) {
-                //backgroundViewPager.setCurrentItem(position);
-                Log.v("TAG", "!@#F#$Wf");
-                StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(position));
+            public void onPageSelected(int position) { //this returns true during another fragment for some reason!
+                Log.v("TAG","Page selected here");
+                if(onPageScrollStateChanged == true){ // this also needs to be true, and will be true first
+                    StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(position));
+                    onPageScrollStateChanged = false; // reset to false
+                }
             }
         });
     }
@@ -111,6 +118,9 @@ public class FragmentSongList extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+
+                Log.v("TAG", "List item click position is : " + String.valueOf(arg2));
+                Log.v("TAG", "Song object list size is : " + String.valueOf(StaticMusicPlayer.getPlayList().size()));
 
                 Intent intent = new Intent(getActivity(), PlayPanel.class);
                 startActivity(intent);

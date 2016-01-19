@@ -24,7 +24,7 @@ public class FragmentAlbumList extends Fragment {
 
     private static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
     private ArrayList<AlbumObject> albumObjectList;
-    static private AlbumObject albumSelectedFromListView;
+    static public AlbumObject albumSelectedFromListView;
 
     static public AlbumObject getSelectedAlbum(){return albumSelectedFromListView;}
 

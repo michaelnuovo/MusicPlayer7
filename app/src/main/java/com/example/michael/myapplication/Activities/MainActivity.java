@@ -33,12 +33,20 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<SongObject> songObjectList = new ArrayList<>();
-    ArrayList<AlbumObject> albumObjectList = new ArrayList<>();
-    ArrayList<ArtistObject> artistObjectList = new ArrayList<>();
+    static ArrayList<SongObject> songObjectList = new ArrayList<>();
+    static ArrayList<AlbumObject> albumObjectList = new ArrayList<>();
+    static ArrayList<ArtistObject> artistObjectList = new ArrayList<>();
 
     PageAdapterMainActivity pageAdapter;
     ViewPager viewPager;
+
+    static public ArrayList<ArtistObject> getArtistObjectList(){
+        return artistObjectList;
+    }
+
+    static public ArrayList<AlbumObject> getAlbumObjectList(){
+        return albumObjectList;
+    }
 
     public void doNetworkingStuff(){
         MediaStoreInterface mint = new MediaStoreInterface(ctx);
@@ -91,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-
-
         tabLayout.getTabAt(0).setIcon(R.drawable.icon_playlist);
         tabLayout.getTabAt(1).setIcon(R.drawable.icon_heart);
         tabLayout.getTabAt(2).setIcon(R.drawable.icon_musicalnotes);
@@ -112,8 +118,6 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<albumObjectList.size();i++){
             Log.v("TAG", "album title: " + albumObjectList.get(i).albumTitle);
         }
-
-
 
         doNetworkingStuff();
     }

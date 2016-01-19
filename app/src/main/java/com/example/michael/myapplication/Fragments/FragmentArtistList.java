@@ -30,6 +30,7 @@ public class FragmentArtistList extends Fragment {
     private static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
     private ArrayList<ArtistObject> artistObjectList;
     static private ArtistObject artistSelectedFromListView;
+    static public int currentArtistIndex;
 
     static public ArtistObject getSelectedArtist(){return artistSelectedFromListView;}
 
@@ -72,6 +73,7 @@ public class FragmentArtistList extends Fragment {
                 Intent intent = new Intent(getActivity(), SingleArtist.class);
                 startActivity(intent);
 
+                currentArtistIndex = arg2;
                 artistSelectedFromListView = artistObjectList.get(arg2);
             }
         });

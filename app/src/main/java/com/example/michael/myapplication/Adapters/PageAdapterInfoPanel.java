@@ -91,8 +91,8 @@ public class PageAdapterInfoPanel extends PagerAdapter {
 
                     BitmapDrawable dw = new BitmapDrawable(filler);
                     layout.setBackgroundDrawable(dw);
-                    scaleCenterCrop.recycleBitmaps();
-                    filler.recycle();
+                    //scaleCenterCrop.recycleBitmaps();
+                    //filler.recycle();
                 }
                 if(null!=bm){
 
