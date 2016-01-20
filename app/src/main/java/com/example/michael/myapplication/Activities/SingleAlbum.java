@@ -6,18 +6,17 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.michael.myapplication.Adapters.FragmentListAdapterSongsList;
-import com.example.michael.myapplication.Adapters.PageAdapterInfoPanel;
-import com.example.michael.myapplication.Adapters.ResetInfoPanelAdapters;
+import com.example.michael.myapplication.Adapters.PageAdapterInfoPanelMain;
+import com.example.michael.myapplication.Adapters.PageAdapterInfoPanelOther;
 import com.example.michael.myapplication.Adapters.UpdateAdapters;
 import com.example.michael.myapplication.Fragments.FragmentAlbumList;
 import com.example.michael.myapplication.Fragments.FragmentArtistList;
-import com.example.michael.myapplication.Objects.AlbumObject;
+import com.example.michael.myapplication.Fragments.FragmentSongList;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.R;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
@@ -26,11 +25,23 @@ import java.util.ArrayList;
 
 public class SingleAlbum extends AppCompatActivity {
 
+    ArrayList<SongObject> songObjectList;
+    boolean SONGSTARTED = false;
+
     @Override
     public void onBackPressed() {
-        //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
+
         System.gc();
         finish();
+
+        if(SONGSTARTED==true){
+            //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
+            FragmentSongList.pageAdapterInfoPanelMain.resetData(FragmentArtistList.artistSelectedFromListView.songObjectList);
+            //FragmentSongList.infoPanelViewPager.setAdapter(FragmentSongList.pageAdapterInfoPanelMain);
+            FragmentSongList.pageAdapterInfoPanelMain.notifyDataSetChanged(); //should only do if a song has been played
+            //FragmentSongList.infoPanelViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());
+        }
+        SONGSTARTED=false;
     }
     
     @Override
@@ -38,6 +49,8 @@ public class SingleAlbum extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_artist);
+
+        songObjectList = FragmentAlbumList.albumSelectedFromListView.songObjectList;
 
         //Set play list
         //StaticMusicPlayer.setPlayList(songObjectList);
@@ -51,20 +64,26 @@ public class SingleAlbum extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                System.gc();
+                Intent intent = new Intent(getApplicationContext(), PlayPanel.class);
+                startActivity(intent);
+                songObjectList = StaticMusicPlayer.returnShuffledList(songObjectList);
+                StaticMusicPlayer.setPlayList(songObjectList);
+                StaticMusicPlayer.tryToPlaySong(songObjectList.get(0));
+                SONGSTARTED=true;
             }
         });
 
         //List adapter
-        FragmentListAdapterSongsList adapter = new FragmentListAdapterSongsList(this, R.layout.list_item_songs_fragment, FragmentAlbumList.albumSelectedFromListView.songObjectList);
+        FragmentListAdapterSongsList adapter = new FragmentListAdapterSongsList(this, R.layout.list_item_songs_fragment, songObjectList);
         listView = (ListView) findViewById(R.id.fragmentListView);
         listView.setAdapter(adapter);
 
         //Information Panel Page Adapter
-        PageAdapterInfoPanel pageAdapterInfoPanel = PageAdapterInfoPanel.getInstance(this,FragmentAlbumList.albumSelectedFromListView.songObjectList);
+        PageAdapterInfoPanelOther pageAdapterInfoPanelOther = PageAdapterInfoPanelOther.getInstance(this, songObjectList);
         ViewPager infoPanelPager = (ViewPager) findViewById(R.id.infoPanelPager);
-        infoPanelPager.setAdapter(pageAdapterInfoPanel);
+        infoPanelPager.setAdapter(pageAdapterInfoPanelOther);
         infoPanelPager.setCurrentItem(0);
 
         //Update Adapters
@@ -82,7 +101,7 @@ public class SingleAlbum extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), PlayPanel.class);
                 startActivity(intent);
-                StaticMusicPlayer.setPlayList(FragmentAlbumList.albumSelectedFromListView.songObjectList);
+                StaticMusicPlayer.setPlayList(songObjectList);
                 StaticMusicPlayer.tryToPlaySong(StaticMusicPlayer.getPlayList().get(arg2));
             }
         });

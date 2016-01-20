@@ -23,7 +23,7 @@ public class UpdateAdapters {
     private FragmentGridViewAdapterAlbumList fragmentGridViewAdapterAlbumList;
 
     //Information panel adapter
-    private PageAdapterInfoPanel pageAdapterInfoPanel;
+    private PageAdapterInfoPanelMain pageAdapterInfoPanelMain;
 
 
     private ListView MyListViewTracks;
@@ -54,8 +54,8 @@ public class UpdateAdapters {
         this.fragmentGridViewAdapterAlbumList = fragmentGridViewAdapterAlbumList;
     }
 
-    public void setAdapterFour(PageAdapterInfoPanel pageAdapterInfoPanel){
-        this.pageAdapterInfoPanel=pageAdapterInfoPanel;
+    public void setAdapterFour(PageAdapterInfoPanelMain pageAdapterInfoPanelMain){
+        this.pageAdapterInfoPanelMain = pageAdapterInfoPanelMain;
     }
 
     //Public methods
@@ -82,8 +82,8 @@ public class UpdateAdapters {
             Log.v("TAG","myGridViewAdapter is a null reference ");
         }
 
-        if(null != pageAdapterInfoPanel) {
-            pageAdapterInfoPanel.notifyDataSetChanged();
+        if(null != pageAdapterInfoPanelMain) {
+            pageAdapterInfoPanelMain.notifyDataSetChanged();
             Log.v("TAG", "pageAdapterInfoPanel successfully updated ");
         } else {
             Log.v("TAG","pageAdapterInfoPanel is a null reference ");

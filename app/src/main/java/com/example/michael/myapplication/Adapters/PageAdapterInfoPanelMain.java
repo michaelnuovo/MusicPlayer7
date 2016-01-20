@@ -27,28 +27,20 @@ import java.io.File;
 import java.util.ArrayList;
 
 
-public class PageAdapterInfoPanel extends PagerAdapter {
+public class PageAdapterInfoPanelMain extends PagerAdapter {
 
     Context ctx;
     static ArrayList<SongObject> songObjectList;
-    public static PageAdapterInfoPanel pageAdapterInfoPanel;
+    public static PageAdapterInfoPanelMain pageAdapterInfoPanelMain;
 
-    public PageAdapterInfoPanel(Context ctx, ArrayList<SongObject> songObjectList) {
+    public PageAdapterInfoPanelMain(Context ctx, ArrayList<SongObject> songObjectList) {
 
         this.ctx = ctx;
         this.songObjectList=songObjectList;
     }
 
-    public static PageAdapterInfoPanel getInstance(Context ctx, ArrayList<SongObject> _songObjectList){
-        if(pageAdapterInfoPanel==null){
-            pageAdapterInfoPanel=new PageAdapterInfoPanel(ctx, _songObjectList);
-            pageAdapterInfoPanel.notifyDataSetChanged();
-            return pageAdapterInfoPanel;
-        }else{
-            songObjectList = _songObjectList; //need to reset the list that will be adapted
-            pageAdapterInfoPanel.notifyDataSetChanged();
-            return pageAdapterInfoPanel;
-        }
+    public void resetData(ArrayList<SongObject> _songObjectList){
+        songObjectList=_songObjectList;
     }
 
     @Override
@@ -143,7 +135,7 @@ public class PageAdapterInfoPanel extends PagerAdapter {
 
     @Override
     public int getItemPosition(Object object){
-        return POSITION_NONE; //This makes the view pager update; see "ViewPager PaderAdapter no updating the View" on SO
+        return POSITION_NONE; //This makes the view pager update on notifyDataSetChanged(); see "ViewPager PaderAdapter no updating the View" on SO
                               //The view pager only updates a view when the position returns none
     }
 

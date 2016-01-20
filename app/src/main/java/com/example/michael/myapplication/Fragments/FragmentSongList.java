@@ -1,11 +1,8 @@
 package com.example.michael.myapplication.Fragments;
 
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -17,7 +14,7 @@ import android.widget.ListView;
 
 import com.example.michael.myapplication.Activities.PlayPanel;
 import com.example.michael.myapplication.Adapters.FragmentListAdapterSongsList;
-import com.example.michael.myapplication.Adapters.PageAdapterInfoPanel;
+import com.example.michael.myapplication.Adapters.PageAdapterInfoPanelMain;
 import com.example.michael.myapplication.Adapters.ResetInfoPanelAdapters;
 import com.example.michael.myapplication.Adapters.UpdateAdapters;
 import com.example.michael.myapplication.Objects.SongObject;
@@ -31,6 +28,9 @@ public class FragmentSongList extends Fragment {
     private static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
     private ArrayList<SongObject> songObjectList;
     boolean onPageScrollStateChanged = false;
+
+    static public PageAdapterInfoPanelMain pageAdapterInfoPanelMain;
+    public static ViewPager infoPanelViewPager;
 
     public static final FragmentSongList newInstance(ArrayList<SongObject> arrayList){
 
@@ -70,24 +70,24 @@ public class FragmentSongList extends Fragment {
         listView.setAdapter(listAdapter);
 
         //Information Panel Page Adapter
-        PageAdapterInfoPanel pageAdapterInfoPanel = PageAdapterInfoPanel.getInstance(getActivity(),songObjectList);
-        ViewPager infoPanelPager = (ViewPager) rootView.findViewById(R.id.infoPanelPager);
-        infoPanelPager.setAdapter(pageAdapterInfoPanel);
-        infoPanelPager.setCurrentItem(0);
+        pageAdapterInfoPanelMain = new PageAdapterInfoPanelMain(getActivity(), StaticMusicPlayer.getPlayList());
+        infoPanelViewPager = (ViewPager) rootView.findViewById(R.id.infoPanelPager);
+        infoPanelViewPager.setAdapter(pageAdapterInfoPanelMain);
+        infoPanelViewPager.setCurrentItem(0);
 
         //Pass the view pager and the adapter to the ResetInfoPanelAdapters class for future resetting (when the play panel opens)
-        ResetInfoPanelAdapters.setSongListFragmentPager(pageAdapterInfoPanel);
-        ResetInfoPanelAdapters.setSongsListFragmentViewPager(infoPanelPager);
+        ResetInfoPanelAdapters.setSongListFragmentPager(pageAdapterInfoPanelMain);
+        ResetInfoPanelAdapters.setSongsListFragmentViewPager(infoPanelViewPager);
 
         //Update Adapters
         UpdateAdapters.getInstance().setAdapterOne(listAdapter, listView);
-        UpdateAdapters.getInstance().setAdapterFour(pageAdapterInfoPanel);
+        UpdateAdapters.getInstance().setAdapterFour(pageAdapterInfoPanelMain);
 
         //Set list item click listener
         setListItemClickListener(listView);
 
 
-        setPagerListener(infoPanelPager);
+        setPagerListener(infoPanelViewPager);
 
         return rootView;
     }

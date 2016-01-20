@@ -1,7 +1,6 @@
 package com.example.michael.myapplication.Adapters;
 
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 
@@ -10,23 +9,23 @@ import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
  */
 public class ResetInfoPanelAdapters {
 
-    static private PageAdapterInfoPanel singleArtistActivityAdapter;
-    static private PageAdapterInfoPanel singleAlbumActivityAdapter;
-    static private PageAdapterInfoPanel songsListFragmentAdapter;
+    static private PageAdapterInfoPanelMain singleArtistActivityAdapter;
+    static private PageAdapterInfoPanelMain singleAlbumActivityAdapter;
+    static private PageAdapterInfoPanelMain songsListFragmentAdapter;
 
     static private ViewPager singleArtistActivityViewPager;
     static private ViewPager singleAlbumActivityViewPager;
     static private ViewPager songsListFragmentViewPager;
 
-    public static void setSingleArtistActivityPager(PageAdapterInfoPanel _singleArtistActivityAdapter){
+    public static void setSingleArtistActivityPager(PageAdapterInfoPanelMain _singleArtistActivityAdapter){
         singleArtistActivityAdapter=_singleArtistActivityAdapter;
     }
 
-    public static void setSingleAlbumActivityPager(PageAdapterInfoPanel _singleAlbumActivityAdapter){
+    public static void setSingleAlbumActivityPager(PageAdapterInfoPanelMain _singleAlbumActivityAdapter){
         singleAlbumActivityAdapter=_singleAlbumActivityAdapter;
     }
 
-    public static void setSongListFragmentPager(PageAdapterInfoPanel _songsListFragmentAdapter){
+    public static void setSongListFragmentPager(PageAdapterInfoPanelMain _songsListFragmentAdapter){
         songsListFragmentAdapter=_songsListFragmentAdapter;
     }
 
