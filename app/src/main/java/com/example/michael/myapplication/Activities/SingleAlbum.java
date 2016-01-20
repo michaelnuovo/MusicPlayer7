@@ -26,22 +26,12 @@ import java.util.ArrayList;
 public class SingleAlbum extends AppCompatActivity {
 
     ArrayList<SongObject> songObjectList;
-    boolean SONGSTARTED = false;
 
     @Override
     public void onBackPressed() {
 
         System.gc();
         finish();
-
-        if(SONGSTARTED==true){
-            //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
-            FragmentSongList.pageAdapterInfoPanelMain.resetData(FragmentArtistList.artistSelectedFromListView.songObjectList);
-            //FragmentSongList.infoPanelViewPager.setAdapter(FragmentSongList.pageAdapterInfoPanelMain);
-            FragmentSongList.pageAdapterInfoPanelMain.notifyDataSetChanged(); //should only do if a song has been played
-            //FragmentSongList.infoPanelViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());
-        }
-        SONGSTARTED=false;
     }
     
     @Override
@@ -71,7 +61,6 @@ public class SingleAlbum extends AppCompatActivity {
                 songObjectList = StaticMusicPlayer.returnShuffledList(songObjectList);
                 StaticMusicPlayer.setPlayList(songObjectList);
                 StaticMusicPlayer.tryToPlaySong(songObjectList.get(0));
-                SONGSTARTED=true;
             }
         });
 

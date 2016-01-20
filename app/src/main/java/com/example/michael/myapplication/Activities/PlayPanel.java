@@ -14,6 +14,8 @@ import com.eftimoff.viewpagertransformers.RotateUpTransformer;
 import com.example.michael.myapplication.Adapters.PageAdapterBackground;
 import com.example.michael.myapplication.Adapters.PageAdapterMini;
 import com.example.michael.myapplication.Adapters.ResetInfoPanelAdapters;
+import com.example.michael.myapplication.Fragments.FragmentArtistList;
+import com.example.michael.myapplication.Fragments.FragmentSongList;
 import com.example.michael.myapplication.R;
 import com.example.michael.myapplication.Tranformations.DepthPageTransformer;
 import com.example.michael.myapplication.Tranformations.FadePageTransformer;
@@ -26,8 +28,14 @@ public class PlayPanel extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
-        System.gc();
+
         finish();
+        System.gc();
+
+        FragmentSongList.pageAdapterInfoPanelMain.resetData(StaticMusicPlayer.getPlayList());
+        FragmentSongList.pageAdapterInfoPanelMain.notifyDataSetChanged();
+        FragmentSongList.infoPanelViewPager.setAdapter(FragmentSongList.pageAdapterInfoPanelMain);
+        FragmentSongList.infoPanelViewPager.setCurrentItem(StaticMusicPlayer.getCurrentIndex());
     }
 
     @Override
