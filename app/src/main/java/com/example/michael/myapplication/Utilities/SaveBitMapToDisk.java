@@ -9,6 +9,7 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Environment;
 import android.util.Log;
 
@@ -25,10 +26,12 @@ import java.io.IOException;
  */
 public class SaveBitMapToDisk {
 
-    String imagePath1;
+    String imagePathSource;
+    String imagePathBackground;
+    String imagePathInfoPanel;
 
-    public String getImagePath1(){
-        return imagePath1;
+    public String getImagePathSource(){
+        return imagePathSource;
     }
 
     public void SaveImage(Bitmap source, String folderName, AlbumObject albumObject) {
@@ -36,19 +39,151 @@ public class SaveBitMapToDisk {
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/" + folderName);
         myDir.mkdirs();
-        String fileName1 = albumObject.albumTitle + "_source_" + albumObject.albumId + ".jpg";
+
+        //File 1
+        String fileName1 = albumObject.albumTitle + "_source_" + ".jpg";
         albumObject.albumArtURI = fileName1;
-        imagePath1 = myDir + "/" + fileName1;
+        imagePathSource = myDir + "/" + fileName1;
         File file1 = new File(myDir, fileName1);
         if (file1.exists()) file1.delete();
+        Bitmap scaledSourceMap = scaleToAcceptableSize(source); //scales proportionally to width of 500 pixels
+        //Bitmap convertedBitmap = convert(scaledBitMap, Bitmap.Config.RGB_565); //converts to RGB_565 to reduce memory size by a factor of 2 if the image is ARGB_8888; see http://stackoverflow.com/questions/6480182/how-can-i-specify-the-bitmap-format-e-g-rgba-8888-with-bitmapfactory-decode
+        saveToExternalStorage(scaledSourceMap, file1);
 
-        Bitmap scaledBitMap = scaleToAcceptableSize(source); //scales proportionally to width of 500 pixels
-        Bitmap convertedBitmap = convert(scaledBitMap, Bitmap.Config.RGB_565); //converts to RGB_565 to reduce memory size by a factor of 2 if the image is ARGB_8888; see http://stackoverflow.com/questions/6480182/how-can-i-specify-the-bitmap-format-e-g-rgba-8888-with-bitmapfactory-decode
-        saveToExternalStorage(convertedBitmap, file1);
+        //File center cropped
+        String centerCropped = albumObject.albumTitle + "_source__centerCropped_" + ".jpg";
+        Bitmap centerCroppedMap = ScaleCenterCrop.CenterCropBitmapWithoutScaling(scaledSourceMap, Dimensions.getWidth(), Dimensions.getHeight()); // h/w
+        File centerCroppedFile = new File(myDir, centerCropped);
+        if (centerCroppedFile.exists()) centerCroppedFile.delete();
+        saveToExternalStorage(centerCroppedMap, centerCroppedFile);
 
-        scaledBitMap.recycle();
-        convertedBitmap.recycle();
+        //File 2
+        String fileName2 = albumObject.albumTitle + "_source__background_" + ".jpg";
+        imagePathBackground = myDir + "/" + fileName2;
+        File file2 = new File(myDir, fileName2);
+        if (file2.exists()) file2.delete();
+        //Bitmap centerCropped = CenterCrop.crop(scaledSourceMap);
+
+        int scaleToABlurWidth = 20;
+        int scaleToABlurHeight = (int)(centerCroppedMap.getHeight()*((double)scaleToABlurWidth/centerCroppedMap.getWidth())); //maintains original aspect ratio
+        //Log.v("TAG","(double)(scaleToABlurWidth/scaledSourceMap.getWidth()) is "+String.valueOf((double)(scaleToABlurWidth/scaledSourceMap.getWidth())));
+        //Log.v("TAG","scaledSourceMap.getWidth() is "+String.valueOf(scaledSourceMap.getWidth()));
+        //Log.v("TAG","scaleToABlurWidth is "+String.valueOf(scaleToABlurWidth));
+        //Log.v("TAG","scaledSourceMap.getHeight() is "+String.valueOf(scaledSourceMap.getHeight()));
+        //Log.v("TAG","scaleToABlurHeight is "+String.valueOf(scaleToABlurHeight));
+        Bitmap scaleToABlur = Bitmap.createScaledBitmap(centerCroppedMap, scaleToABlurWidth, scaleToABlurHeight, false); //createScaledBitmap(Bitmap src, int dstWidth, int dstHeight, boolean filter)
+        saveToExternalStorage(scaleToABlur, file2);
+        scaleToABlur.recycle();
+        centerCroppedMap.recycle();
+
+        //File 3
+        String fileName3 = albumObject.albumTitle + "_source__informationPanel_" + ".jpg";
+        imagePathInfoPanel = myDir + "/" + fileName3;
+        File file3 = new File(myDir, fileName3);
+        if (file3.exists()) file3.delete();
+        Bitmap infoPanel = ScaleCenterCrop.CenterCropBitmapWithoutScaling(scaledSourceMap, scaledSourceMap.getWidth(), 150); // h/w
+        saveToExternalStorage(infoPanel, file3);
+
+        scaledSourceMap.recycle();
+
+        //convertedBitmap.recycle();
         System.gc();
+    }
+
+    public Bitmap centerCrop(Bitmap source){
+
+        int screenHeight = Dimensions.getHeight();
+        int screenWidth = Dimensions.getWidth();
+
+        double scaleFactorHeight = screenHeight/screenWidth;
+
+        int newHeight=source.getHeight();
+
+        int newWidth=(int)(source.getHeight()*scaleFactorHeight);
+
+
+        int sourceWidth = source.getWidth();
+        int sourceHeight = source.getHeight();
+
+        // Compute the scaling factors to fit the new height and width, respectively.
+        // To cover the final image, the final scaling will be the bigger
+        // of these two.
+        float xScale = (float) newWidth / sourceWidth;
+        float yScale = (float) newHeight / sourceHeight;
+        float scale = Math.max(xScale, yScale);
+
+        // Now get the size of the source bitmap when scaled
+        float scaledWidth = scale * sourceWidth;
+        float scaledHeight = scale * sourceHeight;
+
+        // Let's find out the upper left coordinates if the scaled bitmap
+        // should be centered in the new size give by the parameters
+        float left = (newWidth - scaledWidth) / 2;
+        float top = (newHeight - scaledHeight) / 2;
+
+        // The target rectangle for the new, scaled version of the source bitmap will now
+        // be
+
+        //RectF targetRect = new RectF(left, top, scaledWidth, scaledHeight);          //CENTER CROP
+        RectF targetRect = new RectF(0, 0, scaledWidth, scaledHeight);                 //TOP-DOWN CROP
+
+        // Finally, we create a new bitmap of the specified size and draw our new,
+        // scaled bitmap onto it.
+
+        Bitmap dest = Bitmap.createBitmap(Dimensions.getWidth(), Dimensions.getHeight(), source.getConfig()); //width, int height, http://developer.android.com/intl/zh-cn/reference/android/graphics/Bitmap.html
+        Canvas canvas = new Canvas(dest);
+        canvas.drawBitmap(source, null, targetRect, null);
+
+        return dest;
+    }
+
+    public Bitmap cropToInfoPanel(Bitmap source){
+
+        int screenHeight = Dimensions.getHeight();
+        int screenWidth = Dimensions.getWidth();
+
+        double scaleFactorHeight = screenHeight/screenWidth;
+
+        int newHeight=source.getHeight();
+
+        int newWidth=(int)(source.getHeight()*scaleFactorHeight);
+
+
+        int sourceWidth = source.getWidth();
+        int sourceHeight = source.getHeight();
+
+        // Compute the scaling factors to fit the new height and width, respectively.
+        // To cover the final image, the final scaling will be the bigger
+        // of these two.
+        float xScale = (float) newWidth / sourceWidth;
+        float yScale = (float) newHeight / sourceHeight;
+        float scale = Math.max(xScale, yScale);
+
+        // Now get the size of the source bitmap when scaled
+        float scaledWidth = scale * sourceWidth;
+        float scaledHeight = scale * sourceHeight;
+
+        // Let's find out the upper left coordinates if the scaled bitmap
+        // should be centered in the new size give by the parameters
+        float left = (newWidth - scaledWidth) / 2;
+        float top = (newHeight - scaledHeight) / 2;
+
+        // The target rectangle for the new, scaled version of the source bitmap will now
+        // be
+
+        //RectF targetRect = new RectF(left, top, scaledWidth, scaledHeight);          //CENTER CROP
+        RectF targetRect = new RectF(0, 0, source.getWidth(), 150*Dimensions.getWidth()/500);                 //TOP-DOWN CROP
+
+        // Finally, we create a new bitmap of the specified size and draw our new,
+        // scaled bitmap onto it.
+
+
+
+        Bitmap dest = Bitmap.createBitmap(source.getWidth(), 150*Dimensions.getWidth()/500, source.getConfig()); //width, int height, http://developer.android.com/intl/zh-cn/reference/android/graphics/Bitmap.html
+        //Canvas canvas = new Canvas(dest);
+        //canvas.drawBitmap(source, null, targetRect, null);
+
+        return dest;
     }
 
 

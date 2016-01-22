@@ -52,7 +52,7 @@ public class AlbumArt {
                 // Save the bitmap to disk, return an image path
                 SaveBitMapToDisk saveImage = new SaveBitMapToDisk();
                 saveImage.SaveImage(bitmap, "myalbumart", albumObjectsList.get(i));
-                String imagePathData = saveImage.getImagePath1();
+                String imagePathData = saveImage.getImagePathSource();
 
                 // Update the image path to Android meta data
                 //Log.v("TAG","paths.get(i)[1] : "+paths.get(i)[1]);

@@ -223,7 +223,7 @@ public class LastFmAlbumLookup {
                                             // Save the bitmap to disk, return an image path
                                             SaveBitMapToDisk saveImage = new SaveBitMapToDisk();
                                             saveImage.SaveImage(response, "myalbumart", albumObject);
-                                            String imagePathData = saveImage.getImagePath1();
+                                            String imagePathData = saveImage.getImagePathSource();
 
                                             // Update the image path to Android meta data
                                             MediaStoreInterface mediaStore = new MediaStoreInterface(ctx);

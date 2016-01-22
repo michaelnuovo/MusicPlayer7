@@ -3,6 +3,7 @@ package com.example.michael.myapplication.Utilities;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 
 import com.example.michael.myapplication.Activities.MainActivity;
@@ -49,14 +50,25 @@ public class MyBitmaps {
 
         for (String key : keys) {
             // ...
-            if(key != String.valueOf(position-1) && key != String.valueOf(position) && key != String.valueOf(position+1)){
+            if(!key.equals(String.valueOf(position-1)) && !key.equals(String.valueOf(position - 1) + "background") &&
+                    !key.equals(String.valueOf(position)) && !key.equals(String.valueOf(position) + "background") &&
+                    !key.equals(String.valueOf(position + 1)) && !key.equals(String.valueOf(position+1)+"background")
+                    ){
                 //do nothing
             } else {
-                Log.v("TAG", key + "deleted");
+                Log.v("TAG", key + " deleted");
                 hashMap.remove(String.valueOf(position));
             }
         }
 
         System.gc();
+    }
+
+    public static String getBackgroundUri(String uri){
+        String extension = ".jpg";
+        String[] splitUri = uri.split(extension);
+        String frontEnd = splitUri[0] + "_background_";
+        String backEnd = extension;
+        return frontEnd + backEnd;
     }
 }

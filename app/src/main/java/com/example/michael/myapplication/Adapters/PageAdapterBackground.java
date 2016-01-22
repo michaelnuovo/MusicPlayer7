@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +19,6 @@ import com.example.michael.myapplication.Utilities.ScaleCenterCrop;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * Created by Michael on 1/14/2016.
@@ -45,7 +41,7 @@ public class PageAdapterBackground extends PagerAdapter {
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.pager_layout_background, collection, false); //a view group is a layout, a view is a child of a view group
         collection.addView(layout);
 
-        layout.setTag(position);
+        layout.setTag(String.valueOf(position)+"background");
         Drawable drbl = getDrawable(layout, position);
         layout.setBackground(drbl);
         System.gc();
@@ -60,9 +56,12 @@ public class PageAdapterBackground extends PagerAdapter {
             options.inJustDecodeBounds = false;
             options.inPreferredConfig = Bitmap.Config.RGB_565;
             options.inDither = true;
-            Bitmap bm = BitmapFactory.decodeFile(songObjectList.get(position).albumArtURI,options);
+            String uri = MyBitmaps.getBackgroundUri(songObjectList.get(position).albumArtURI);
+            //String uri = songObjectList.get(position).albumArtURI;
+            Log.v("TAG","background uri is : "+uri);
+            Bitmap bm = BitmapFactory.decodeFile(uri,options);
             BitmapDrawable drbl = new BitmapDrawable(bm);
-            MyBitmaps.hashMap.put(String.valueOf(position),drbl);
+            MyBitmaps.hashMap.put(String.valueOf(position)+"background",drbl);
             MyBitmaps.trimHashList(MyBitmaps.hashMap, position);
             return drbl;
         } else {
@@ -88,14 +87,14 @@ public class PageAdapterBackground extends PagerAdapter {
                 }
                 if(null!=bm){
                     ScaleCenterCrop scaleCenterCrop = new ScaleCenterCrop();
-                    Bitmap background = scaleCenterCrop.scale(bm);
+                    //Bitmap background = scaleCenterCrop.crop(bm);
                     bm.recycle();
                     double scaleFactor = ((double)Dimensions.getWidth()) / ((double)Dimensions.getHeight());
                     double scale = 5; //Must be at least two pixels long (a shorter length will collapse width to zero)
-                    Bitmap blurred = Bitmap.createScaledBitmap(background, (int) (scale * scaleFactor), (int) scale, false); //width/height
-                    background.recycle();
-                    BitmapDrawable drbl = new BitmapDrawable(blurred);
-                    layout.setBackground(drbl);
+                    //Bitmap blurred = Bitmap.createScaledBitmap(background, (int) (scale * scaleFactor), (int) scale, false); //width/height
+                    //background.recycle();
+                    //BitmapDrawable drbl = new BitmapDrawable(blurred);
+                    //layout.setBackground(drbl);
                 }
             }
         }
