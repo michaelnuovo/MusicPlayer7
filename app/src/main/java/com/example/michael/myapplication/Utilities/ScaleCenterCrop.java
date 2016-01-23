@@ -48,7 +48,7 @@ public class ScaleCenterCrop {
     }*/
 
 
-    public static Bitmap CenterCropBitmapWithoutScaling(Bitmap source, int viewWidth, int viewHeight) {
+    public static Bitmap TopCenterCropBitmapWithoutScaling(Bitmap source, int viewWidth, int viewHeight) {
 
         float xScale = (float) viewWidth / source.getWidth();
         float yScale = (float) viewHeight / source.getHeight();

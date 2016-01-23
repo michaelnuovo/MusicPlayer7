@@ -187,7 +187,7 @@ public class LastFmAlbumLookup {
                     //Every other time I run the app, all the response objects are empty. Literally only EVERY OTHER TIME.
 
                     //String imageUrl="";
-                    String imageUrl = response.album.images.get(4).text;
+                    String imageUrl = response.album.images.get(3).text;
 
 
                     if(imageUrl == null || imageUrl.equals("")){
