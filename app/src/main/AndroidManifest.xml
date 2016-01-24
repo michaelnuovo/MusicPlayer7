@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -39,6 +38,21 @@
             android:name=".Activities.SingleAlbum"
             android:label="@string/title_activity_single_album"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <receiver android:name=".BroadCastReceiversAndServices.BootUpReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".BroadCastReceiversAndServices.MusicIntentReceiver">
+            <intent-filter>
+                <action android:name="android.intent.ACTION_HEADSET_PLUG" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".BroadCastReceiversAndServices.BackgroundService" />
     </application>
 
 </manifest>

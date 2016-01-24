@@ -1,6 +1,9 @@
 package com.example.michael.myapplication.Activities;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,9 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
+import com.example.michael.myapplication.BroadCastReceiversAndServices.MusicIntentReceiver;
 import com.example.michael.myapplication.Networking.LastFmAlbumLookup;
 import com.example.michael.myapplication.Objects.AlbumObject;
 import com.example.michael.myapplication.Objects.ArtistObject;
@@ -27,6 +29,7 @@ import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.Utilities.AlbumArt;
 import com.example.michael.myapplication.Utilities.MediaStoreInterface;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
+import com.example.michael.myapplication.BroadCastReceiversAndServices.BackgroundService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        if(isMyServiceRunning(BackgroundService.class)){
+            Log.v("TAG","My service is running");
+        } else {
+            Log.v("TAG","My service is not running");
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -129,6 +138,16 @@ public class MainActivity extends AppCompatActivity {
         doNetworkingStuff();
     }
 
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     private List<Fragment> getFragments(ArrayList<SongObject> songObjectList,
