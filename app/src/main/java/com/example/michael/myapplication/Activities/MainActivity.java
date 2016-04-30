@@ -89,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        /**
+         * The background service doesn't look like it's starting up.
+         * 
+         */
+
         if(isMyServiceRunning(BackgroundService.class)){
             Log.v("TAG","My service is running");
         } else {
@@ -99,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ctx = getApplicationContext();
+        Log.v("TAG","Context is "+String.valueOf(ctx));
+
+
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
