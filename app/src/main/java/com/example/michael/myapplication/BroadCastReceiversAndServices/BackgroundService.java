@@ -14,6 +14,13 @@ public class BackgroundService extends Service {
 
     @Override
     public void onCreate() {
+
+        /**
+         * Registers the custom receiver with the Android system.
+         * This receiver cannot be registered in thmanifestst, and must
+         * be set programmatically.
+         */
+
         MusicIntentReceiver receiver = new MusicIntentReceiver();
         registerReceiver(receiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
     }

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.michael.myapplication.Activities.MainActivity;
+import com.example.michael.myapplication.Objects.SongObject;
+import com.example.michael.myapplication.Objects.Test;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -73,7 +75,7 @@ public class SerializeAndSaveObject {
         try {
 
             Application application = new Application();
-            FileInputStream fis = application.getApplicationContext().openFileInput(key);
+            FileInputStream fis = MainActivity.getAppContext().openFileInput(key);
             ObjectInputStream is = new ObjectInputStream(fis);
             Object object = is.readObject();
             is.close();

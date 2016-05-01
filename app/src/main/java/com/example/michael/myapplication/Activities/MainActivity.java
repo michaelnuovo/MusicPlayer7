@@ -89,9 +89,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        Log.v("TAG","In onCreate");
+        Log.v("TAG","In onCreate 2");
+
         /**
          * The background service doesn't look like it's starting up.
-         * 
+         *
          */
 
         if(isMyServiceRunning(BackgroundService.class)){
@@ -144,6 +147,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         doNetworkingStuff();
+
+        /**
+         * Starts up the background service.
+         * The service will set the receiver.
+         * The service will also start up on boot-up with a boot-up receiver.
+         */
+
+        // Create Intent
+        Intent serviceIntent = new Intent(ctx, BackgroundService.class);
+        // Start service with intent
+        ctx.startService(serviceIntent);
+
+
     }
 
 
