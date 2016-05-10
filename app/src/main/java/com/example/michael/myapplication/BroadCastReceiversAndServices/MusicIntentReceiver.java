@@ -27,9 +27,8 @@ public class MusicIntentReceiver extends BroadcastReceiver {
      * This receiver will return receive the first intent
      * as soon as it is registered. So we need a local
      * counter variable that ignores the first intent received.
-     * The variable will remain in scope throughout the life cycle of the receiver.
+     * The variable will remain in scope throughout the life-cycle of the receiver.
      * If the receiver is restarted, the first intent will be ignored.
-     * To test this receiver, uninstall the app first.
      */
 
     int intentCounter = 0;
@@ -39,42 +38,41 @@ public class MusicIntentReceiver extends BroadcastReceiver {
 
         if (intent.getAction().equals(AudioManager.ACTION_HEADSET_PLUG)) {
 
+            /**
+             * De-bug logs
+             */
             Log.v("TAG","Custom intent received: ");
             Log.v("TAG","Pre-increment counter value is: "+intentCounter);
 
             if(intentCounter++ != 0){
 
-                //intentCounter++;
-
+                /**
+                 * De-bug logs
+                 */
                 Log.v("TAG","Post-increment counter value is : "+intentCounter);
-
                 Log.v("TAG", "intent state is " + String.valueOf(intent.getIntExtra("state", 0))); //Prints
 
+                /**
+                 * Headset becomes unplugged.
+                 */
                 if(intent.getIntExtra("state",0)==0){ // 0 for unplugged (if it becomes unplugged)
 
-
-                    /*
-                     * Headset is currently unplugged or becomes unplugged.
-                     * If music playing, music pauses.
+                    /**
+                     * If music is playing, pause it.
                      */
-
-
                     if(StaticMusicPlayer.musicIsPlaying()){
                         //StaticMusicPlayer.togglePauseState();
                     }
                 }
 
+                /**
+                 * Headset becomes plugged in.
+                 */
                 if(intent.getIntExtra("state",0)==1){ // 1 for plugged (if it becomes plugged)
 
-
-                    /*
-                     * Headset is currently plugged in or becomes plugged in.
-                     * If music was paused, music resumes.
-                     * StaticMusicPlayer class maintains a copy of the most current
-                     * playlist its in private folder.
-                     * StaticMusicPlayer also maintains a copy of the current song index.
+                    /**
+                     * If music is not playing, play it.
                      */
-
                     if(StaticMusicPlayer.getPausedState()){
                         //StaticMusicPlayer.togglePauseState();
                     }

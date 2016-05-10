@@ -30,13 +30,24 @@ public class StaticMusicPlayer {
      * as a serialized object.
      * @param _songObjectList
      */
+    public static void setPlayList(ArrayList<SongObject> _songObjectList, Context _ctx){
+
+        songObjectList = _songObjectList;
+        ctx = _ctx;
+
+        //Play list object is serialized and saved to file.
+        //Key is string value "list"
+        SerializeAndSaveObject.saveObject("list", songObjectList, ctx);
+    }
+
     public static void setPlayList(ArrayList<SongObject> _songObjectList){
 
         songObjectList = _songObjectList;
 
+
         //Play list object is serialized and saved to file.
         //Key is string value "list"
-        SerializeAndSaveObject.saveObject("list", songObjectList);
+        SerializeAndSaveObject.saveObject("list", songObjectList, ctx);
     }
 
 
@@ -122,10 +133,14 @@ public class StaticMusicPlayer {
         musicPlayer.prepare();
         musicPlayer.start();
 
-        // Update the current song index saved in private app folder.
-        // The index key will be the string value
-        // of the index, the value will be the int value
-        SerializeAndSaveObject.saveObject(String.valueOf(currentIndex), currentIndex);
+        /**
+         * Update the current song index saved in private app folder.
+         * The index key will be the string value
+         * of the index, the value will be the int value
+         */
+
+        //
+        SerializeAndSaveObject.saveObject(String.valueOf(currentIndex), currentIndex,ctx);
 
         setSongCompletionListener();
     }
@@ -182,7 +197,7 @@ public class StaticMusicPlayer {
 
         try{
 
-            setPlayList((ArrayList<SongObject>)SerializeAndSaveObject.loadObject("list"));
+            //setPlayList((ArrayList<SongObject>)SerializeAndSaveObject.loadObject("list"));
             currentIndex = (int) SerializeAndSaveObject.loadObject("currentIndex");
             tryToPlaySong(songObjectList.get(currentIndex));
 

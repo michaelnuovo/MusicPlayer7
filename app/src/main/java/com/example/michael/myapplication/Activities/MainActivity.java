@@ -1,6 +1,8 @@
 package com.example.michael.myapplication.Activities;
 
 import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,12 +12,14 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.michael.myapplication.BroadCastReceiversAndServices.ForegroundService;
 import com.example.michael.myapplication.BroadCastReceiversAndServices.MusicIntentReceiver;
 import com.example.michael.myapplication.Networking.LastFmAlbumLookup;
 import com.example.michael.myapplication.Objects.AlbumObject;
@@ -86,11 +90,12 @@ public class MainActivity extends AppCompatActivity {
         System.gc();
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Log.v("TAG","In onCreate");
-        Log.v("TAG","In onCreate 2");
+        Log.v("TAG","NEW RUN");
 
         /**
          * The background service doesn't look like it's starting up.
@@ -137,9 +142,13 @@ public class MainActivity extends AppCompatActivity {
         //tab.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_heart, 0, 0);
         //tabLayout.getTabAt(2).setCustomView(tab);
 
+
         Cursor songListCursor = GetSongListCursor();
         MakeLists(songListCursor, songObjectList, albumObjectList, artistObjectList);
-        StaticMusicPlayer.setPlayList(songObjectList);
+        //StaticMusicPlayer.setPlayList(songObjectList);
+
+
+
         //AlbumArt.cropAndSave(songObjectList);
 
         for(int i=0;i<albumObjectList.size();i++){

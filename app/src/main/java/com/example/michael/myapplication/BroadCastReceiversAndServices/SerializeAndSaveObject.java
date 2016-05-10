@@ -32,7 +32,7 @@ import java.io.ObjectOutputStream;
  */
 public class SerializeAndSaveObject {
 
-    static public void saveObject(String key, Object value){
+    static public void saveObject(String key, Object value, Context ctx){
 
         try{
             Log.v("TAG","here");
@@ -49,7 +49,7 @@ public class SerializeAndSaveObject {
              * but main activity will be closed. I need another way of getting the context.
              */
 
-            FileOutputStream fos = MainActivity.getAppContext().openFileOutput(key, Context.MODE_PRIVATE);
+            FileOutputStream fos = ctx.openFileOutput(key, Context.MODE_PRIVATE);
 
             // Line up the object output stream with the file output stream
             ObjectOutputStream oos= new ObjectOutputStream(fos);
