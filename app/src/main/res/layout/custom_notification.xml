@@ -1,0 +1,29 @@
+<!--
+The height available for a custom notification layout depends on the notification view.
+Normal view layouts are limited to 64 dp, and expanded view layouts are limited to 256 dp.
+http://developer.android.com/guide/topics/ui/notifiers/notifications.html#CustomNotification
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp"
+    android:background="#190">
+    <ImageView android:id="@+id/image"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="10dp" />
+    <TextView android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/image"
+        style="Custom Notification Title" />
+    <TextView android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/image"
+        android:layout_below="@id/title"
+        style="Custom Notification Text" />
+</RelativeLayout>

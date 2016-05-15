@@ -23,6 +23,11 @@ import com.example.michael.myapplication.Tranformations.ZoomOutPageTransformer;
 import com.example.michael.myapplication.Utilities.Dimensions;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 
+/**
+ * This pesky class keep crashing my program with OOM error
+ * Throwing OutOfMemoryError "Failed to allocate a 5673936 byte allocation with 297056 free bytes and 290KB until OOM"
+ * allocation failed for scaled bitmap
+ */
 public class PlayPanel extends AppCompatActivity {
 
     @Override
@@ -30,7 +35,7 @@ public class PlayPanel extends AppCompatActivity {
         //ResetInfoPanelAdapters.resetAllInfoPanelAdaptersIfTheyExist();
 
         finish();
-        System.gc();
+        //System.gc();
 
         FragmentSongList.pageAdapterInfoPanelMain.resetData(StaticMusicPlayer.getPlayList());
         FragmentSongList.pageAdapterInfoPanelMain.notifyDataSetChanged();
@@ -42,7 +47,7 @@ public class PlayPanel extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_panel);
-        System.gc();
+        //System.gc();
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
@@ -110,6 +115,9 @@ public class PlayPanel extends AppCompatActivity {
 
     public void setPagerListeners(final ViewPager backgroundViewPager, final ViewPager miniViewPager){
 
+        /**
+         * Background view pager touch listener
+         */
         backgroundViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -118,6 +126,9 @@ public class PlayPanel extends AppCompatActivity {
             }
         });
 
+        /**
+         * Mini view (album view) pager touch listener
+         */
         miniViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -126,6 +137,9 @@ public class PlayPanel extends AppCompatActivity {
             }
         });
 
+        /**
+         * Mini view (album view) pager page change listener
+         */
         miniViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             public void onPageScrollStateChanged(int state) {
             }

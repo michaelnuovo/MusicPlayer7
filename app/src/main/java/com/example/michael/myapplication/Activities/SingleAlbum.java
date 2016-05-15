@@ -30,7 +30,7 @@ public class SingleAlbum extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        System.gc();
+        //System.gc();
         finish();
     }
     
@@ -55,7 +55,7 @@ public class SingleAlbum extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                System.gc();
+                //System.gc();
                 Intent intent = new Intent(getApplicationContext(), PlayPanel.class);
                 startActivity(intent);
                 songObjectList = StaticMusicPlayer.returnShuffledList(songObjectList);

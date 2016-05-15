@@ -43,7 +43,7 @@ public class PageAdapterBackground extends PagerAdapter {
 
         layout.setTag(String.valueOf(position)+"background");
         Drawable drbl = getDrawable(layout, position);
-        layout.setBackground(drbl);
+        //layout.setBackground(drbl);
         System.gc();
 
         return layout;

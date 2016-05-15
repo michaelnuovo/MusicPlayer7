@@ -1,6 +1,7 @@
 package com.example.michael.myapplication.BroadCastReceiversAndServices;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -8,11 +9,13 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 
 import com.example.michael.myapplication.Activities.MainActivity;
@@ -50,13 +53,72 @@ public class BackgroundService extends Service {
 
         Cursor songListCursor = GetSongListCursor();
         MakeLists(songListCursor, songObjectList, albumObjectList, artistObjectList);
-        StaticMusicPlayer mp = new StaticMusicPlayer();
+        //StaticMusicPlayer mp = new StaticMusicPlayer();
 
-        mp.setPlayList(songObjectList, this);
-        mp.tryToPlaySong(songObjectList.get(0));
+        StaticMusicPlayer.setPlayList(songObjectList, this);
+        //StaticMusicPlayer.tryToPlaySong(songObjectList.get(0));
 
-        runAsForeground();
 
+        /**
+         * We need to skip this method somehow service is already in foreground.
+         * This avoids creating new objects etc. no point in calling the method
+         */
+        //runAsForeground();
+        runAsForeground2();
+        //runAsForeground3();
+
+    }
+
+    private void runAsForeground3(){
+        // Set the style
+        NotificationCompat.BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
+        bigStyle.bigText("strMessage");
+
+// Build the notification
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("title")
+                .setContentText("message")
+                .setTicker("ticker")
+                .setColor(this.getResources().getColor(R.color.colorPrimary))
+                .setSmallIcon(R.drawable.button_heart_on)
+                //.setContentIntent(intent)
+                .setStyle(bigStyle)
+                .setWhen(0)
+                .setAutoCancel(true)
+                .setStyle(bigStyle)
+                //.addAction(R.drawable.icon_heart, "string", "pending volume")
+                //.addAction(R.drawable.icon_heart, "string", "pendingStop")
+                .setOngoing(true);
+
+        //notificationBuilder.build();
+
+        startForeground(1337, notificationBuilder.build());
+    }
+
+    private void runAsForeground2(){
+
+        int icon = R.drawable.button_heart_on;
+        long when = System.currentTimeMillis();
+        Notification notification = new Notification(icon, "Custom Notification", when);
+
+        NotificationManager mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.custom_notification);
+        contentView.setImageViewResource(R.id.image, R.drawable.button_heart_transparent);
+        contentView.setTextViewText(R.id.title, "Custom notification");
+        contentView.setTextViewText(R.id.text, "This is a custom layout");
+        notification.contentView = contentView;
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        notification.contentIntent = contentIntent;
+
+        notification.flags |= Notification.FLAG_NO_CLEAR; //Do not clear the notification
+        notification.defaults |= Notification.DEFAULT_LIGHTS; // LED
+        notification.defaults |= Notification.DEFAULT_VIBRATE; //Vibration
+        notification.defaults |= Notification.DEFAULT_SOUND; // Sound
+
+        mNotificationManager.notify(1, notification);
     }
 
     /**
@@ -70,16 +132,42 @@ public class BackgroundService extends Service {
      */
     private void runAsForeground(){
 
+        //Get a bitmap for the notification
+        //java.lang.OutOfMemoryError: Failed to allocate a 150994956 byte allocation with 16777120 free bytes and 76MB until OOM
+        Bitmap appicon = BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.button_heart_on);
+
         NotificationCompat.Builder b = new NotificationCompat.Builder(this);
 
         b.setOngoing(true);
 
+        /**
+         * Set the small icon resource, which will be used to represent the notification in the
+         * status bar. The platform template for the expanded view will draw this icon in the left,
+         * unless a large icon has also been specified, in which case the small icon will be moved
+         * to the right-hand side.
+         * http://stackoverflow.com/questions/13847297/notificationcompat-4-1-setsmallicon-and-setlargeicon
+         */
         b.setContentTitle("playing...")
-                .setContentText("content")
-                .setSmallIcon(android.R.drawable.stat_sys_download)
+                .setColor(Color.parseColor("#191919")) // Set small icon background color (accent color) // Convert hex to int value
+                .setPriority(0) // Sets notification's vertical position
+                .setContentText("conteasdasdassddasdasdas\ndasdasdasdasdasdasdasdaaaaaa\naaaaa\naa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdasdasdasdddddddddddddddddddddddddddddddddddnt")
+                .setSmallIcon(R.drawable.button_heart_on) // Set small icon
+                //.setLargeIcon(appicon)
+                //.setStyle(new Notification.BigPictureStyle().bigPicture(appicon)) // Requires API level 16
                 .setTicker("ticker");
+                //.build();
+
+        //Expanded notifications only for => API 16
+        //My min API is 15
+        //RemoteViews bigView = new RemoteViews(getApplicationContext().getPackageName(),
+        //        R.layout.notification_layout_big);
+        //b.bigContentView  = bigView;
 
         startForeground(1337, b.build());
+
+
+
     }
 
 

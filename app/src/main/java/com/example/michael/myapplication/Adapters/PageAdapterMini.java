@@ -44,7 +44,7 @@ public class PageAdapterMini extends PagerAdapter {
 
         layout.setTag(position);
         Drawable drbl = getDrawable(layout, position);
-        layout.setBackground(drbl);
+        //layout.setBackground(drbl);
         System.gc();
 
 

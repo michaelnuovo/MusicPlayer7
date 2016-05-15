@@ -21,6 +21,7 @@ import android.view.MenuItem;
 
 import com.example.michael.myapplication.BroadCastReceiversAndServices.ForegroundService;
 import com.example.michael.myapplication.BroadCastReceiversAndServices.MusicIntentReceiver;
+import com.example.michael.myapplication.BroadCastReceiversAndServices.Test;
 import com.example.michael.myapplication.Networking.LastFmAlbumLookup;
 import com.example.michael.myapplication.Objects.AlbumObject;
 import com.example.michael.myapplication.Objects.ArtistObject;
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static Context ctx;
+    public static Context ctx;
     public static Context getAppContext() {
         return ctx;
     }
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //pageAdapter.notifyDataSetChanged();
-        System.gc();
+        //System.gc();
     }
 
 
@@ -163,10 +164,16 @@ public class MainActivity extends AppCompatActivity {
          * The service will also start up on boot-up with a boot-up receiver.
          */
 
+        Test t = new Test();
+        t.test = "asd";
+
         // Create Intent
         Intent serviceIntent = new Intent(ctx, BackgroundService.class);
         // Start service with intent
         ctx.startService(serviceIntent);
+
+        //StaticMusicPlayer.tryToPlaySong(songObjectList.get(0));
+
 
 
     }
