@@ -24,8 +24,12 @@ import com.example.michael.myapplication.Objects.ArtistObject;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.R;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import br.com.goncalves.pugnotification.interfaces.ImageLoader;
+import br.com.goncalves.pugnotification.notification.PugNotification;
 
 public class BackgroundService extends Service {
 
@@ -64,9 +68,28 @@ public class BackgroundService extends Service {
          * This avoids creating new objects etc. no point in calling the method
          */
         //runAsForeground();
-        runAsForeground2();
+        //runAsForeground2();
         //runAsForeground3();
+        runAsForeground4();
 
+    }
+
+    private void runAsForeground4(){
+
+        PugNotification.with(context)
+                .load()
+                .title(title)
+                .message(message)
+                .bigTextStyle(bigtext)
+                .smallIcon(R.drawable.pugnotification_ic_launcher)
+                .largeIcon(R.drawable.pugnotification_ic_launcher)
+                .flags(Notification.DEFAULT_ALL)
+                .color(android.R.color.background_dark)
+                .custom()
+                .background(url)
+                .setImageLoader(Callback)
+                .setPlaceholder(R.drawable.pugnotification_ic_placeholder)
+                .build();
     }
 
     private void runAsForeground3(){
@@ -89,6 +112,11 @@ public class BackgroundService extends Service {
                 //.addAction(R.drawable.icon_heart, "string", "pending volume")
                 //.addAction(R.drawable.icon_heart, "string", "pendingStop")
                 .setOngoing(true);
+
+        //priority max is 2
+        //http://stackoverflow.com/questions/13808939/the-method-setpriority-int-is-undefined-for-the-type-notification
+        //battery charged status takes higher priority though
+        notificationBuilder.setPriority(2);
 
         //notificationBuilder.build();
 
