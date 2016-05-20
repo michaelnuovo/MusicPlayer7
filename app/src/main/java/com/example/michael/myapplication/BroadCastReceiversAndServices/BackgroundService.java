@@ -1,54 +1,94 @@
 package com.example.michael.myapplication.BroadCastReceiversAndServices;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.RemoteControlClient;
+import android.media.RemoteControlClient.MetadataEditor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.v4.app.NotificationCompat;
+
+import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
+import android.support.v4.app.NotificationCompat;
 
-import com.example.michael.myapplication.Activities.MainActivity;
 import com.example.michael.myapplication.Objects.AlbumObject;
 import com.example.michael.myapplication.Objects.ArtistObject;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.R;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
-import com.squareup.picasso.Picasso;
+import com.example.michael.myapplication.Utilities.Support;
 
 import java.util.ArrayList;
 
-import br.com.goncalves.pugnotification.interfaces.ImageLoader;
-import br.com.goncalves.pugnotification.notification.PugNotification;
+public class BackgroundService extends Service implements AudioManager.OnAudioFocusChangeListener {
 
-public class BackgroundService extends Service {
+    @Override
+    public void onAudioFocusChange(int focusChange) {}
+
+
+
+    /**
+     * Broadcast messages for notification click listeners
+     */
+    public static final String NOTIFY_PREVIOUS = "com.micha.musicplayertut.previous";
+    public static final String NOTIFY_DELETE = "com.micha.musicplayertut.delete";
+    public static final String NOTIFY_PAUSE = "com.micha.musicplayertut.pause";
+    public static final String NOTIFY_PLAY = "com.micha.musicplayertut.play";
+    public static final String NOTIFY_NEXT = "com.micha.musicplayertut.next";
+
+    // Identifier for a specific application component (Activity, Service, BroadcastReceiver, or ContentProvider)
+    // that is available. Two pieces of information, encapsulated here, are required to identify a component:
+    // the package (a String) it exists in, and the class (a String) name inside of that package.
+    // https://developer.android.com/reference/android/content/ComponentName.html
+    private ComponentName remoteComponentName;
+
+    private RemoteControlClient remoteControlClient;
+
+    private static boolean currentVersionSupportBigNotification = false;
+    private static boolean currentVersionSupportLockScreenControls = false;
+
+    AudioManager audioManager;
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
+    /**
+     * onCreate is called only once to
+     * initialize the service class.
+     * Subsequent calls to startService() call
+     * onStartCommand().
+     */
     @Override
     public void onCreate() {
 
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+
         /**
          * Registers the custom receiver with the Android system.
-         * This receiver cannot be registered in thmanifestst, and must
+         * This receiver cannot be registered in the manifest, and must
          * be set programmatically.
          */
 
         MusicIntentReceiver receiver = new MusicIntentReceiver();
         registerReceiver(receiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
+
+        currentVersionSupportBigNotification = Support.currentVersionSupportBigNotification();
+        currentVersionSupportLockScreenControls = Support.currentVersionSupportLockScreenControls();
+
 
 
         ArrayList<SongObject> songObjectList = new ArrayList<>();
@@ -68,156 +108,146 @@ public class BackgroundService extends Service {
          * This avoids creating new objects etc. no point in calling the method
          */
         //runAsForeground();
-        //runAsForeground2();
-        //runAsForeground3();
-        runAsForeground4();
+
+        //bringToForeground();
 
     }
 
-    private void runAsForeground4(){
-
-        PugNotification.with(context)
-                .load()
-                .title(title)
-                .message(message)
-                .bigTextStyle(bigtext)
-                .smallIcon(R.drawable.pugnotification_ic_launcher)
-                .largeIcon(R.drawable.pugnotification_ic_launcher)
-                .flags(Notification.DEFAULT_ALL)
-                .color(android.R.color.background_dark)
-                .custom()
-                .background(url)
-                .setImageLoader(Callback)
-                .setPlaceholder(R.drawable.pugnotification_ic_placeholder)
-                .build();
-    }
-
-    private void runAsForeground3(){
-        // Set the style
-        NotificationCompat.BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
-        bigStyle.bigText("strMessage");
-
-// Build the notification
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle("title")
-                .setContentText("message")
-                .setTicker("ticker")
-                .setColor(this.getResources().getColor(R.color.colorPrimary))
-                .setSmallIcon(R.drawable.button_heart_on)
-                //.setContentIntent(intent)
-                .setStyle(bigStyle)
-                .setWhen(0)
-                .setAutoCancel(true)
-                .setStyle(bigStyle)
-                //.addAction(R.drawable.icon_heart, "string", "pending volume")
-                //.addAction(R.drawable.icon_heart, "string", "pendingStop")
-                .setOngoing(true);
-
-        //priority max is 2
-        //http://stackoverflow.com/questions/13808939/the-method-setpriority-int-is-undefined-for-the-type-notification
-        //battery charged status takes higher priority though
-        notificationBuilder.setPriority(2);
-
-        //notificationBuilder.build();
-
-        startForeground(1337, notificationBuilder.build());
-    }
-
-    private void runAsForeground2(){
-
-        int icon = R.drawable.button_heart_on;
-        long when = System.currentTimeMillis();
-        Notification notification = new Notification(icon, "Custom Notification", when);
-
-        NotificationManager mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
-        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.custom_notification);
-        contentView.setImageViewResource(R.id.image, R.drawable.button_heart_transparent);
-        contentView.setTextViewText(R.id.title, "Custom notification");
-        contentView.setTextViewText(R.id.text, "This is a custom layout");
-        notification.contentView = contentView;
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        notification.contentIntent = contentIntent;
-
-        notification.flags |= Notification.FLAG_NO_CLEAR; //Do not clear the notification
-        notification.defaults |= Notification.DEFAULT_LIGHTS; // LED
-        notification.defaults |= Notification.DEFAULT_VIBRATE; //Vibration
-        notification.defaults |= Notification.DEFAULT_SOUND; // Sound
-
-        mNotificationManager.notify(1, notification);
-    }
-
-    /**
-     * There are three versions of NotificationCompat.
-     * android.app.Notification
-     * android.support.v7.app.NotificationCompat
-     * android.support.v4.app.NotificationCompat
-     * This method currently uses v4
-     * See the difference
-     * http://stackoverflow.com/questions/18271429/difference-between-android-support-v7-appcompat-and-android-support-v4
-     */
-    private void runAsForeground(){
-
-        //Get a bitmap for the notification
-        //java.lang.OutOfMemoryError: Failed to allocate a 150994956 byte allocation with 16777120 free bytes and 76MB until OOM
-        Bitmap appicon = BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.button_heart_on);
-
-        NotificationCompat.Builder b = new NotificationCompat.Builder(this);
-
-        b.setOngoing(true);
-
-        /**
-         * Set the small icon resource, which will be used to represent the notification in the
-         * status bar. The platform template for the expanded view will draw this icon in the left,
-         * unless a large icon has also been specified, in which case the small icon will be moved
-         * to the right-hand side.
-         * http://stackoverflow.com/questions/13847297/notificationcompat-4-1-setsmallicon-and-setlargeicon
-         */
-        b.setContentTitle("playing...")
-                .setColor(Color.parseColor("#191919")) // Set small icon background color (accent color) // Convert hex to int value
-                .setPriority(0) // Sets notification's vertical position
-                .setContentText("conteasdasdassddasdasdas\ndasdasdasdasdasdasdasdaaaaaa\naaaaa\naa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdasdasdasdddddddddddddddddddddddddddddddddddnt")
-                .setSmallIcon(R.drawable.button_heart_on) // Set small icon
-                //.setLargeIcon(appicon)
-                //.setStyle(new Notification.BigPictureStyle().bigPicture(appicon)) // Requires API level 16
-                .setTicker("ticker");
-                //.build();
-
-        //Expanded notifications only for => API 16
-        //My min API is 15
-        //RemoteViews bigView = new RemoteViews(getApplicationContext().getPackageName(),
-        //        R.layout.notification_layout_big);
-        //b.bigContentView  = bigView;
-
-        startForeground(1337, b.build());
-
-
-
-    }
-
-
-
-    /**
+    @SuppressLint("NewApi")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if(intent.getExtras().equals("songObjectList"))
-        {
-            //Set song
-            ArrayList<SongObject> songObjectList =
-                    (ArrayList<SongObject>) intent.getExtras().get("data");
-            StaticMusicPlayer mp = new StaticMusicPlayer();
-            mp.setPlayList(songObjectList);
-        }
+        if(currentVersionSupportLockScreenControls)
+            RegisterRemoteClient();
 
-        // We want this service to continue running until it is explicitly
-        // stopped, so return sticky.
+
+
+        bringToForeground();
         return START_STICKY;
     }
-     **/
+
+    /**
+     * Brings background service to foreground
+     * with custom notification.
+     */
+    @SuppressLint("NewApi")
+    public void bringToForeground(){
+
+        //String songName = PlayerConstants.SONGS_LIST.get(PlayerConstants.SONG_NUMBER).getTitle();
+        //String albumName = PlayerConstants.SONGS_LIST.get(PlayerConstants.SONG_NUMBER).getAlbum();
+
+        SongObject so = StaticMusicPlayer.getPlayList().get(StaticMusicPlayer.getCurrentIndex());
+        String songName = so.songTitle;
+        String albumName = so.albumTitle;
+        //int albumId =  Integer.parseInt(so.albumID);
+
+        Bitmap albumArt = BitmapFactory.decodeFile(so.albumArtURI);
+        boolean SONG_PAUSED = StaticMusicPlayer.getPausedState();
+
+        Log.v("TAG","Title is "+so.songTitle);
+        Log.v("TAG","Album art path is "+so.albumArtURI);
+        Log.v("TAG","Song path path is "+so.songPath);
+        Log.v("TAG","Bitmap reference is "+albumArt);
+
+
+        RemoteViews simpleContentView = new RemoteViews(getApplicationContext().getPackageName(),R.layout.custom_notification);
+        RemoteViews expandedView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.big_notification);
+
+
+        Notification notification = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.ic_heart)
+                .setContentTitle(songName).build();
+
+        setListeners(simpleContentView);
+        setListeners(expandedView);
+
+        notification.contentView = simpleContentView;
+        if(currentVersionSupportBigNotification){
+            notification.bigContentView = expandedView;
+            Log.v("TAG","R$#G%");
+        }
+
+        try{
+            //long albumId = PlayerConstants.SONGS_LIST.get(PlayerConstants.SONG_NUMBER).getAlbumId();
+            //Bitmap albumArt = UtilFunctions.getAlbumart(getApplicationContext(), albumId);
+            if(albumArt != null){
+
+                notification.contentView.setImageViewBitmap(R.id.imageViewAlbumArt, albumArt);
+                if(currentVersionSupportBigNotification){
+                    notification.bigContentView.setImageViewBitmap(R.id.imageViewAlbumArt, albumArt);
+
+                }
+            }else{
+
+                notification.contentView.setImageViewResource(R.id.imageViewAlbumArt, R.drawable.default_album_art);
+                if(currentVersionSupportBigNotification){
+                    notification.bigContentView.setImageViewResource(R.id.imageViewAlbumArt, R.drawable.default_album_art);
+                    Log.v("TAG","@#!F$@");
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        //if(PlayerConstants.SONG_PAUSED){
+        if(SONG_PAUSED){
+            notification.contentView.setViewVisibility(R.id.btnPause, View.GONE);
+            notification.contentView.setViewVisibility(R.id.btnPlay, View.VISIBLE);
+
+            if(currentVersionSupportBigNotification){
+                notification.bigContentView.setViewVisibility(R.id.btnPause, View.GONE);
+                notification.bigContentView.setViewVisibility(R.id.btnPlay, View.VISIBLE);
+            }
+        }else{
+            notification.contentView.setViewVisibility(R.id.btnPause, View.VISIBLE);
+            notification.contentView.setViewVisibility(R.id.btnPlay, View.GONE);
+
+            if(currentVersionSupportBigNotification){
+                notification.bigContentView.setViewVisibility(R.id.btnPause, View.VISIBLE);
+                notification.bigContentView.setViewVisibility(R.id.btnPlay, View.GONE);
+            }
+        }
+
+        notification.contentView.setTextViewText(R.id.textSongName, songName);
+        notification.contentView.setTextViewText(R.id.textAlbumName, albumName);
+        if(currentVersionSupportBigNotification){
+            notification.bigContentView.setTextViewText(R.id.textSongName, songName);
+            notification.bigContentView.setTextViewText(R.id.textAlbumName, albumName);
+        }
+
+        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+        int NOTIFICATION_ID = 1337;
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
+    /**
+     * Notification click listeners
+     * @param view
+     */
+    public void setListeners(RemoteViews view) {
+
+        Intent previous = new Intent(NOTIFY_PREVIOUS);
+        Intent delete = new Intent(NOTIFY_DELETE);
+        Intent pause = new Intent(NOTIFY_PAUSE);
+        Intent next = new Intent(NOTIFY_NEXT);
+        Intent play = new Intent(NOTIFY_PLAY);
+
+        PendingIntent pPrevious = PendingIntent.getBroadcast(getApplicationContext(), 0, previous, PendingIntent.FLAG_UPDATE_CURRENT);
+        view.setOnClickPendingIntent(R.id.btnPrevious, pPrevious);
+
+        PendingIntent pDelete = PendingIntent.getBroadcast(getApplicationContext(), 0, delete, PendingIntent.FLAG_UPDATE_CURRENT);
+        view.setOnClickPendingIntent(R.id.btnDelete, pDelete);
+
+        PendingIntent pPause = PendingIntent.getBroadcast(getApplicationContext(), 0, pause, PendingIntent.FLAG_UPDATE_CURRENT);
+        view.setOnClickPendingIntent(R.id.btnPause, pPause);
+
+        PendingIntent pNext = PendingIntent.getBroadcast(getApplicationContext(), 0, next, PendingIntent.FLAG_UPDATE_CURRENT);
+        view.setOnClickPendingIntent(R.id.btnNext, pNext);
+
+        PendingIntent pPlay = PendingIntent.getBroadcast(getApplicationContext(), 0, play, PendingIntent.FLAG_UPDATE_CURRENT);
+        view.setOnClickPendingIntent(R.id.btnPlay, pPlay);
+
+    }
 
     @Override
     public void onDestroy() {
@@ -227,6 +257,35 @@ public class BackgroundService extends Service {
     @Override
     public void onStart(Intent intent, int startid) {
 
+    }
+
+    private void RegisterRemoteClient(){
+
+        remoteComponentName = new ComponentName(getApplicationContext(), new BroadCastReceiver().ComponentName());
+        try {
+            if(remoteControlClient == null) {
+
+                Log.v("TAG","remoteControlClient == null");
+
+                audioManager.registerMediaButtonEventReceiver(remoteComponentName);
+                Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+                mediaButtonIntent.setComponent(remoteComponentName);
+                PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, 0);
+                remoteControlClient = new RemoteControlClient(mediaPendingIntent);
+                audioManager.registerRemoteControlClient(remoteControlClient);
+            }
+
+            /**
+            remoteControlClient.setTransportControlFlags(
+                    RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
+                            RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
+                            RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE |
+                            RemoteControlClient.FLAG_KEY_MEDIA_STOP |
+                            RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
+                            RemoteControlClient.FLAG_KEY_MEDIA_NEXT);
+             **/
+        }catch(Exception ex) {
+        }
     }
 
     private Cursor GetSongListCursor() {

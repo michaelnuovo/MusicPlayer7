@@ -3,7 +3,6 @@ package com.example.michael.myapplication.Utilities;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.util.Log;
 
 import com.example.michael.myapplication.Activities.MainActivity;
@@ -30,7 +29,7 @@ public class MyBitmaps {
 
     static public Bitmap getFillerAlbum(){
         if(null==fillerAlbum){
-            fillerAlbum = BitmapFactory.decodeResource(MainActivity.getAppContext().getResources(), R.drawable.filler_empty_black_album);
+            fillerAlbum = BitmapFactory.decodeResource(MainActivity.getAppContext().getResources(), R.drawable.default_album_art);
             return fillerAlbum;
         } else {
             return fillerAlbum;

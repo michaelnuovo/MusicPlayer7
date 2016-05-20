@@ -1,26 +1,20 @@
 package com.example.michael.myapplication.Activities;
 
 import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.michael.myapplication.BroadCastReceiversAndServices.ForegroundService;
-import com.example.michael.myapplication.BroadCastReceiversAndServices.MusicIntentReceiver;
 import com.example.michael.myapplication.BroadCastReceiversAndServices.Test;
 import com.example.michael.myapplication.Networking.LastFmAlbumLookup;
 import com.example.michael.myapplication.Objects.AlbumObject;
@@ -33,8 +27,8 @@ import com.example.michael.myapplication.R;
 import com.example.michael.myapplication.Objects.SongObject;
 import com.example.michael.myapplication.Utilities.AlbumArt;
 import com.example.michael.myapplication.Utilities.MediaStoreInterface;
-import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 import com.example.michael.myapplication.BroadCastReceiversAndServices.BackgroundService;
+import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         tabLayout.getTabAt(0).setIcon(R.drawable.icon_playlist);
-        tabLayout.getTabAt(1).setIcon(R.drawable.icon_heart);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_heart);
         tabLayout.getTabAt(2).setIcon(R.drawable.icon_musicalnotes);
         tabLayout.getTabAt(3).setIcon(R.drawable.icon_head);
         tabLayout.getTabAt(4).setIcon(R.drawable.icon_album);
@@ -173,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
         ctx.startService(serviceIntent);
 
         //StaticMusicPlayer.tryToPlaySong(songObjectList.get(0));
+
 
 
 

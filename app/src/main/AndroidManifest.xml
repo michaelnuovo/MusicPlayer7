@@ -10,6 +10,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="19" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -39,7 +43,7 @@
             android:label="@string/title_activity_single_album"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
-        <receiver android:name=".BroadCastReceiversAndServices.BootUpReceiver">
+        <receiver android:name=".BroadCastReceiversAndServices.BroadCastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
