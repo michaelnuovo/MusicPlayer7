@@ -43,16 +43,38 @@
             android:label="@string/title_activity_single_album"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
-        <receiver android:name=".BroadCastReceiversAndServices.BroadCastReceiver">
+        <receiver android:name=".BroadCastReceiversAndServices.BootUpReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".BroadCastReceiversAndServices.MusicIntentReceiver">
+        <receiver android:name=".BroadCastReceiversAndServices.HeadSetPlugReceiver">
             <intent-filter>
                 <action android:name="android.intent.ACTION_HEADSET_PLUG" />
+
+                <!--
+                <action android:name="com.tutorialsface.audioplayer.delete" />
+                <action android:name="com.tutorialsface.audioplayer.pause" />
+                <action android:name="com.tutorialsface.audioplayer.next" />
+                <action android:name="com.tutorialsface.audioplayer.play" />
+                <action android:name="com.tutorialsface.audioplayer.previous" />
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                -->
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".BroadCastReceiversAndServices.RemoteControlReceiver">
+            <intent-filter>
+
+                <action android:name="com.tutorialsface.audioplayer.delete" />
+                <action android:name="com.tutorialsface.audioplayer.pause" />
+                <action android:name="com.tutorialsface.audioplayer.next" />
+                <action android:name="com.tutorialsface.audioplayer.play" />
+                <action android:name="com.tutorialsface.audioplayer.previous" />
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+
             </intent-filter>
         </receiver>
 

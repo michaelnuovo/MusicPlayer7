@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.RemoteControlClient;
-import android.media.RemoteControlClient.MetadataEditor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.provider.MediaStore;
@@ -30,6 +29,8 @@ import com.example.michael.myapplication.R;
 import com.example.michael.myapplication.Utilities.StaticMusicPlayer;
 import com.example.michael.myapplication.Utilities.Support;
 
+
+
 import java.util.ArrayList;
 
 public class BackgroundService extends Service implements AudioManager.OnAudioFocusChangeListener {
@@ -37,22 +38,21 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
     @Override
     public void onAudioFocusChange(int focusChange) {}
 
-
-
     /**
      * Broadcast messages for notification click listeners
      */
-    public static final String NOTIFY_PREVIOUS = "com.micha.musicplayertut.previous";
-    public static final String NOTIFY_DELETE = "com.micha.musicplayertut.delete";
-    public static final String NOTIFY_PAUSE = "com.micha.musicplayertut.pause";
-    public static final String NOTIFY_PLAY = "com.micha.musicplayertut.play";
-    public static final String NOTIFY_NEXT = "com.micha.musicplayertut.next";
+    public static final String NOTIFY_PREVIOUS = "com.michael.myapplication.previous";
+    public static final String NOTIFY_DELETE = "com.michael.myapplication.delete";
+    public static final String NOTIFY_PAUSE = "com.michael.myapplication.pause";
+    public static final String NOTIFY_PLAY = "com.michael.myapplication.play";
+    public static final String NOTIFY_NEXT = "com.michael.myapplication.next";
+
 
     // Identifier for a specific application component (Activity, Service, BroadcastReceiver, or ContentProvider)
     // that is available. Two pieces of information, encapsulated here, are required to identify a component:
     // the package (a String) it exists in, and the class (a String) name inside of that package.
     // https://developer.android.com/reference/android/content/ComponentName.html
-    private ComponentName remoteComponentName;
+    private ComponentName myEventReceiver;
 
     private RemoteControlClient remoteControlClient;
 
@@ -60,6 +60,8 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
     private static boolean currentVersionSupportLockScreenControls = false;
 
     AudioManager audioManager;
+
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -78,18 +80,17 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         /**
-         * Registers the custom receiver with the Android system.
-         * This receiver cannot be registered in the manifest, and must
-         * be set programmatically.
+         * For listening to headset changes, the broadcast receiver cannot be declared in the manifest,
+         * it must be dynamically registered. Not all receivers work when declared in the manifest
+         * and this is an example where you need to register it programmatically.
+         * http://stackoverflow.com/questions/7481083/androidbroadcastreceiveraction-headset-plug-not-firing
          */
 
-        MusicIntentReceiver receiver = new MusicIntentReceiver();
+        HeadSetPlugReceiver receiver = new HeadSetPlugReceiver();
         registerReceiver(receiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
 
         currentVersionSupportBigNotification = Support.currentVersionSupportBigNotification();
         currentVersionSupportLockScreenControls = Support.currentVersionSupportLockScreenControls();
-
-
 
         ArrayList<SongObject> songObjectList = new ArrayList<>();
         ArrayList<AlbumObject> albumObjectList = new ArrayList<>();
@@ -102,6 +103,12 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         StaticMusicPlayer.setPlayList(songObjectList, this);
         //StaticMusicPlayer.tryToPlaySong(songObjectList.get(0));
 
+        //Set remoteControlClient to update its data
+        StaticMusicPlayer.remoteControlClient = remoteControlClient;
+        StaticMusicPlayer.audioManager = audioManager;
+        StaticMusicPlayer.resources = getResources();
+        StaticMusicPlayer.backgroundServiceContext = this;
+        StaticMusicPlayer.currentVersionSupportLockScreenControls = currentVersionSupportLockScreenControls;
 
         /**
          * We need to skip this method somehow service is already in foreground.
@@ -119,8 +126,6 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
 
         if(currentVersionSupportLockScreenControls)
             RegisterRemoteClient();
-
-
 
         bringToForeground();
         return START_STICKY;
@@ -142,7 +147,7 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         //int albumId =  Integer.parseInt(so.albumID);
 
         Bitmap albumArt = BitmapFactory.decodeFile(so.albumArtURI);
-        boolean SONG_PAUSED = StaticMusicPlayer.getPausedState();
+        boolean SONG_PAUSED = StaticMusicPlayer.isPaused();
 
         Log.v("TAG","Title is "+so.songTitle);
         Log.v("TAG","Album art path is "+so.albumArtURI);
@@ -247,11 +252,18 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
         PendingIntent pPlay = PendingIntent.getBroadcast(getApplicationContext(), 0, play, PendingIntent.FLAG_UPDATE_CURRENT);
         view.setOnClickPendingIntent(R.id.btnPlay, pPlay);
 
+        Log.v("TAG","R$#EW");
+
     }
 
     @Override
     public void onDestroy() {
 
+        if(StaticMusicPlayer.musicPlayer != null){
+            StaticMusicPlayer.musicPlayer.stop();
+            StaticMusicPlayer.musicPlayer = null;
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -259,23 +271,36 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
 
     }
 
+    /**
+     * Registers remote client.
+     * A remote control client object is associated with a media button event receiver.
+     * This event receiver must have been previously registered with
+     * registerMediaButtonEventReceiver(ComponentName) before the RemoteControlClient can be
+     * registered through registerRemoteControlClient(RemoteControlClient).
+     */
     private void RegisterRemoteClient(){
 
-        remoteComponentName = new ComponentName(getApplicationContext(), new BroadCastReceiver().ComponentName());
+        myEventReceiver = new ComponentName(getApplicationContext(), new RemoteControlReceiver().ComponentName());
+
         try {
+
             if(remoteControlClient == null) {
 
-                Log.v("TAG","remoteControlClient == null");
+                // Audio manager must register the event receiver before it can register
+                // the remote control client.
+                audioManager.registerMediaButtonEventReceiver(myEventReceiver);
 
-                audioManager.registerMediaButtonEventReceiver(remoteComponentName);
+                // Initializes remoteControlClient
                 Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-                mediaButtonIntent.setComponent(remoteComponentName);
+                mediaButtonIntent.setComponent(myEventReceiver);
                 PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, 0);
                 remoteControlClient = new RemoteControlClient(mediaPendingIntent);
+
+                // Audio manager finally registers remoteControlClient
                 audioManager.registerRemoteControlClient(remoteControlClient);
             }
 
-            /**
+
             remoteControlClient.setTransportControlFlags(
                     RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
                             RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
@@ -283,10 +308,12 @@ public class BackgroundService extends Service implements AudioManager.OnAudioFo
                             RemoteControlClient.FLAG_KEY_MEDIA_STOP |
                             RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
                             RemoteControlClient.FLAG_KEY_MEDIA_NEXT);
-             **/
+
         }catch(Exception ex) {
         }
     }
+
+
 
     private Cursor GetSongListCursor() {
         Uri contentURI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
